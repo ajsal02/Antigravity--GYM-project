@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FORGE | Elite 3D Athletic Performance & Calisthenics Lab</title>
+  <meta name="description" content="FORGE is an ultra-modern 3D athletic performance and calisthenics center featuring Olympic weightlifting, bodyweight gymnastics, biomechanical laboratories, and cryo-recovery.">
+  <meta name="keywords" content="FORGE, gym, calisthenics, 3D fitness, luxury gym, athletic training, Olympic weightlifting, gymnastics rings, biomechanics">
+  <meta name="theme-color" content="#000000">
+  
+  <!-- Fonts: Syne (Display), Outfit (Headings), Inter (Body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800;900&family=Syne:wght@700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.321.0/font/lucide.min.css">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dark-theme">
+
+  <!-- Background WebGL 3D Canvas (Spans entire page depth) -->
+  <div id="webgl-container" aria-hidden="true">
+    <canvas id="three-canvas"></canvas>
+  </div>
+
+  <!-- Noise & Ambient Glow Overlays -->
+  <div class="noise-overlay" aria-hidden="true"></div>
+  <div class="ambient-glow glow-top" aria-hidden="true"></div>
+  <div class="ambient-glow glow-bottom" aria-hidden="true"></div>
+
+  <!-- Global Header / Navbar -->
+  <header id="site-header" class="site-header">
+    <div class="header-container">
+      <a href="#hero" class="brand-logo" id="logo-link">
+        <span class="logo-symbol">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 2L37 32H3L20 2Z" stroke="url(#paint0_linear)" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M20 12L30 30H10L20 12Z" fill="url(#paint1_linear)"/>
+            <circle cx="20" cy="20" r="4" fill="#d4ff00"/>
+            <defs>
+              <linearGradient id="paint0_linear" x1="20" y1="2" x2="20" y2="32" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#d4ff00"/>
+                <stop offset="1" stop-color="#00f5ff"/>
+              </linearGradient>
+              <linearGradient id="paint1_linear" x1="20" y1="12" x2="20" y2="30" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#d4ff00" stop-opacity="0.8"/>
+                <stop offset="1" stop-color="#00f5ff" stop-opacity="0.1"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </span>
+        <div class="logo-text">
+          <span class="logo-title">FORGE</span>
+          <span class="logo-subtitle">PERFORMANCE</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Links -->
+      <nav class="nav-links" id="main-nav">
+        <a href="#hero" class="nav-link active">Home</a>
+        <a href="#about" class="nav-link">About</a>
+        <a href="#interactive-3d" class="nav-link">3D Lab</a>
+        <a href="#programs" class="nav-link">Programs</a>
+        <a href="#facilities" class="nav-link">Facilities</a>
+        <a href="#trainers" class="nav-link">Trainers</a>
+        <a href="#pricing" class="nav-link">Memberships</a>
+        <a href="#contact" class="nav-link">Inquiry</a>
+      </nav>
+
+      <!-- Header Action Items -->
+      <div class="header-actions">
+        <!-- Audio Synthesizer Sound Toggle -->
+        <button id="sound-toggle-btn" class="icon-btn" title="Toggle UI Sound Effects" aria-label="Toggle Sound Effects">
+          <span class="sound-icon sound-off">🔇</span>
+          <span class="sound-icon sound-on hidden">🔊</span>
+          <span class="btn-tooltip">Sound: OFF</span>
+        </button>
+
+        <!-- 3D Camera Reset / Mode Toggle -->
+        <button id="camera-mode-btn" class="icon-btn" title="Switch 3D View Camera" aria-label="Toggle 3D View">
+          <span class="camera-icon">🌐</span>
+          <span class="btn-tooltip">3D Orbit</span>
+        </button>
+
+        <!-- Admin CRM Dashboard Link -->
+        <a href="admin.html" class="icon-btn" title="Open Admin CRM Dashboard" target="_blank" aria-label="Admin CRM Portal">
+          <span style="font-size: 1.05rem;">📊</span>
+          <span class="btn-tooltip">Admin CRM</span>
+        </a>
+
+        <a href="#contact" class="btn btn-primary btn-sm header-cta" id="header-cta-btn">
+          <span>Claim VIP Pass</span>
+          <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button id="mobile-menu-btn" class="mobile-toggle" aria-label="Toggle mobile menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer Menu -->
+  <div id="mobile-drawer" class="mobile-drawer">
+    <div class="mobile-drawer-content">
+      <nav class="mobile-nav-links">
+        <a href="#hero" class="mobile-link">Home</a>
+        <a href="#about" class="mobile-link">About</a>
+        <a href="#interactive-3d" class="mobile-link">3D Lab</a>
+        <a href="#programs" class="mobile-link">Programs</a>
+        <a href="#facilities" class="mobile-link">Facilities</a>
+        <a href="#trainers" class="mobile-link">Trainers</a>
+        <a href="#pricing" class="mobile-link">Memberships</a>
+        <a href="#contact" class="mobile-link">Inquiry</a>
+      </nav>
+      <div class="mobile-cta-wrap">
+        <a href="#contact" class="btn btn-primary btn-block">Claim Free Day Pass</a>
+      </div>
+    </div>
+  </div>
+
+  <main id="main-content">
+    
+    <!-- 1. HERO SECTION -->
+    <section id="hero" class="hero-section">
+      <div class="hero-content">
+        <div class="hero-badge-tag">
+          <span class="pulse-dot"></span>
+          <span>SPORTS SCIENCE & CALISTHENICS ENGINEERING</span>
+        </div>
+
+        <h1 class="hero-title">
+          FORGE YOUR <br>
+          <span class="text-gradient">ULTIMATE PHYSIQUE</span>
+        </h1>
+
+        <p class="hero-description">
+          Welcome to <strong class="text-white">FORGE</strong>. Where Olympic-grade strength engineering meets elite calisthenics and spatial biomechanics. Train in a hyper-optimized 3D environment designed for peak human evolution.
+        </p>
+
+        <div class="hero-buttons">
+          <a href="#pricing" class="btn btn-primary btn-lg" id="hero-primary-cta">
+            <span>Explore Memberships</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#interactive-3d" class="btn btn-secondary btn-lg" id="hero-secondary-cta">
+            <span class="play-icon">▶</span>
+            <span>Launch 3D Explorer</span>
+          </a>
+        </div>
+
+        <!-- Live Metrics Strip -->
+        <div class="hero-stats">
+          <div class="stat-card">
+            <span class="stat-number" data-target="28000">0</span>
+            <span class="stat-suffix">SQ FT</span>
+            <span class="stat-label">Smart Facility Space</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-card">
+            <span class="stat-number" data-target="100">0</span>
+            <span class="stat-suffix">%</span>
+            <span class="stat-label">Eleiko & Keiser Tech</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-card">
+            <span class="stat-number" data-target="34">0</span>
+            <span class="stat-suffix">+</span>
+            <span class="stat-label">Olympic & Master Coaches</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-card">
+            <span class="stat-number" data-target="99">0</span>
+            <span class="stat-suffix">.4%</span>
+            <span class="stat-label">Athletic Goal Success</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3D Hint Overlay -->
+      <div class="hero-3d-hint">
+        <div class="hint-mouse-icon">
+          <div class="wheel"></div>
+        </div>
+        <span>Drag anywhere to rotate 3D equipment • Scroll to explore depth</span>
+      </div>
+    </section>
+
+    <!-- 2. INTERACTIVE 3D EQUIPMENT LAB SECTION -->
+    <section id="interactive-3d" class="interactive-3d-section">
+      <div class="section-container">
+        <div class="section-header text-center">
+          <span class="section-tag">3D INTERACTIVE LAB</span>
+          <h2 class="section-title">ENGINEERED FOR <span class="text-gradient">MAXIMUM FORCE</span></h2>
+          <p class="section-subtitle">
+            Inspect our Olympic competition hardware and biomechanical kinetic models in real-time 3D. Rotate, explode components, and customize finishes.
+          </p>
+        </div>
+
+        <div class="interactive-3d-wrapper">
+          <!-- 3D Control Dashboard -->
+          <div class="control-panel glass-card">
+            <div class="panel-section">
+              <span class="panel-title">SELECT 3D APPARATUS</span>
+              <div class="model-buttons-grid" id="model-selector-group">
+                <button class="model-btn active" data-model="barbell" id="btn-model-barbell">
+                  <span class="model-btn-icon">🏋️</span>
+                  <span>Olympic Barbell</span>
+                </button>
+                <button class="model-btn" data-model="dumbbell" id="btn-model-dumbbell">
+                  <span class="model-btn-icon">💪</span>
+                  <span>Hex Dumbbell</span>
+                </button>
+                <button class="model-btn" data-model="kettlebell" id="btn-model-kettlebell">
+                  <span class="model-btn-icon">⚡</span>
+                  <span>Forge Kettlebell</span>
+                </button>
+                <button class="model-btn" data-model="rings" id="btn-model-rings">
+                  <span class="model-btn-icon">⭕</span>
+                  <span>Gymnastic Rings</span>
+                </button>
+                <button class="model-btn" data-model="biomech" id="btn-model-biomech">
+                  <span class="model-btn-icon">🧬</span>
+                  <span>Anatomy Core</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Dumbbell Specific Interactive Station Controls -->
+            <div class="panel-section" id="dumbbell-panel-controls" style="display: none;">
+              <span class="panel-title">DUMBBELL WEIGHT & RACK CONTROLS</span>
+              <div class="weight-buttons-row">
+                <button class="weight-btn" data-weight="35">35 LBS</button>
+                <button class="weight-btn active" data-weight="50">50 LBS</button>
+                <button class="weight-btn" data-weight="75">75 LBS</button>
+                <button class="weight-btn" data-weight="100">100 LBS</button>
+              </div>
+              <button class="action-highlight-btn" id="btn-lift-dumbbell" title="Pick up or rack dumbbell">
+                <span class="lift-icon">🏋️‍♂️</span>
+                <span id="lift-text">Lift Dumbbell from Rack</span>
+              </button>
+            </div>
+
+            <div class="panel-section">
+              <span class="panel-title">INTERACTIVE ACTIONS</span>
+              <div class="action-buttons-flex">
+                <button class="tool-btn" id="btn-explode" title="Explode / Assemble 3D components">
+                  <span class="tool-icon">💥</span>
+                  <span id="explode-text">Explode View</span>
+                </button>
+                <button class="tool-btn active" id="btn-autorotate" title="Toggle 360 Auto-Rotation">
+                  <span class="tool-icon">🔄</span>
+                  <span id="rotate-text">Auto Spin: ON</span>
+                </button>
+                <button class="tool-btn" id="btn-reset-view" title="Reset Camera Perspective">
+                  <span class="tool-icon">🎯</span>
+                  <span>Reset Camera</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="panel-section">
+              <span class="panel-title">MATERIAL FINISH</span>
+              <div class="color-swatches" id="material-swatches">
+                <button class="swatch-btn active" data-color="chrome" title="Titanium Chrome" style="background: linear-gradient(135deg, #d4d4d8, #71717a);"></button>
+                <button class="swatch-btn" data-color="obsidian" title="Matte Obsidian" style="background: linear-gradient(135deg, #27272a, #09090b);"></button>
+                <button class="swatch-btn" data-color="volt" title="Electric Volt" style="background: linear-gradient(135deg, #c6ff00, #84cc16);"></button>
+                <button class="swatch-btn" data-color="cyan" title="Cyber Cyan" style="background: linear-gradient(135deg, #00f0ff, #0284c7);"></button>
+              </div>
+            </div>
+
+            <div class="panel-section">
+              <span class="panel-title">ENVIRONMENT LIGHTING</span>
+              <div class="lighting-buttons-grid">
+                <button class="light-btn active" data-lighting="cyber">Neon Cyber</button>
+                <button class="light-btn" data-lighting="studio">Studio Clean</button>
+                <button class="light-btn" data-lighting="ember">Forge Ember</button>
+              </div>
+            </div>
+
+            <!-- Live Equipment Specs Box -->
+            <div class="specs-box" id="model-specs-box">
+              <h4 class="specs-title" id="spec-name">Eleiko IWF Competition Barbell</h4>
+              <div class="specs-grid">
+                <div class="spec-item">
+                  <span class="spec-label">Tensile Strength:</span>
+                  <span class="spec-val" id="spec-tensile">215,000 PSI</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-label">Total Calibrated Load:</span>
+                  <span class="spec-val" id="spec-load">120 KG (Loaded)</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-label">Bearing Tech:</span>
+                  <span class="spec-val" id="spec-bearings">10 Precision Needle</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-label">Coating:</span>
+                  <span class="spec-val" id="spec-coating">Ion-Plated Chrome</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Viewport Canvas Overlay Guide -->
+          <div class="interactive-stage-hint">
+            <span class="badge"><span class="pulse-dot"></span> LIVE 3D GYM VIEWPORT</span>
+            <p>Left Click + Drag to Orbit • Click Dumbbell to Lift / Rack • Wheel to Zoom</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. ABOUT SECTION -->
+    <section id="about" class="about-section">
+      <div class="section-container">
+        <div class="about-grid">
+          <div class="about-text-content">
+            <span class="section-tag">WHO WE ARE</span>
+            <h2 class="section-title">BEYOND FITNESS. <br><span class="text-gradient">SPORTS ARCHITECTURE.</span></h2>
+            
+            <p class="about-lead">
+              Founded in 2021 by former Olympic weightlifting coaches and sports biomechanists, <strong>FORGE</strong> was built to dismantle generic commercial fitness.
+            </p>
+
+            <p class="about-body">
+              We treat the human body as an engineered kinetic machine. Every dumbbell, platform, infrared chamber, and coaching protocol is calibrated with mathematical precision to maximize hypertrophic output, neural power recruitment, and musculoskeletal longevity.
+            </p>
+
+            <!-- 4 Pillars Cards -->
+            <div class="pillars-grid">
+              <div class="pillar-card glass-card">
+                <div class="pillar-icon">🔬</div>
+                <h3 class="pillar-title">Biomechanical Precision</h3>
+                <p class="pillar-desc">Custom force-plate diagnostics and 3D motion-capture to correct joint mechanics in real time.</p>
+              </div>
+
+              <div class="pillar-card glass-card">
+                <div class="pillar-icon">⚡</div>
+                <h3 class="pillar-title">Hypertrophy Protocols</h3>
+                <p class="pillar-desc">Periodized load cycling backed by peer-reviewed sports science for undeniable strength adaptations.</p>
+              </div>
+
+              <div class="pillar-card glass-card">
+                <div class="pillar-icon">🧊</div>
+                <h3 class="pillar-title">Cryo & Cellular Recovery</h3>
+                <p class="pillar-desc">Full-spectrum infrared, -110°C hyperbaric cryo-chambers, and NormaTec compression suites.</p>
+              </div>
+
+              <div class="pillar-card glass-card">
+                <div class="pillar-icon">🏆</div>
+                <h3 class="pillar-title">Elite Culture</h3>
+                <p class="pillar-desc">A driven, disciplined community of competitors, executives, and dedicated lifters who refuse mediocrity.</p>
+              </div>
+            </div>
+
+            <div class="about-quote glass-card">
+              <p>"We don't sell gym memberships. We build resilient human architecture that dominates in sport and life."</p>
+              <div class="quote-author">
+                <img src="https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=120&auto=format&fit=crop&q=80" alt="Marcus Vance" class="author-avatar" loading="lazy">
+                <div>
+                  <strong>Marcus Vance, CSCS</strong>
+                  <span>Founder & Head of Biomechanics</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- About Visual Collage with 3D Depth Card -->
+          <div class="about-visual-column">
+            <div class="visual-stack">
+              <div class="visual-card visual-card-main tilt-effect">
+                <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=900&auto=format&fit=crop&q=80" alt="Athlete training in FORGE arena" class="visual-img" loading="lazy">
+                <div class="visual-caption">
+                  <span class="caption-tag">POWER HALL</span>
+                  <h4>Olympic Lifting Arenas</h4>
+                </div>
+              </div>
+              <div class="visual-card visual-card-sub tilt-effect">
+                <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=600&auto=format&fit=crop&q=80" alt="Weight training platforms" class="visual-img" loading="lazy">
+                <div class="floating-badge">
+                  <span class="badge-icon">✓</span>
+                  <span>100% Eleiko Certified</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. SERVICES & PROGRAMS SECTION -->
+    <section id="programs" class="programs-section">
+      <div class="section-container">
+        <div class="section-header text-center">
+          <span class="section-tag">CURATED ATHLETIC DISCIPLINES</span>
+          <h2 class="section-title">CALIBRATED <span class="text-gradient">TRAINING SYSTEMS</span></h2>
+          <p class="section-subtitle">
+            Explore our signature training tracks. Each program is engineered with defined periodization phases, intensity brackets, and measurable benchmarks.
+          </p>
+
+          <!-- Program Filter Pills -->
+          <div class="filter-pills" id="program-filters">
+            <button class="pill-btn active" data-filter="all">All Tracks (9)</button>
+            <button class="pill-btn" data-filter="calisthenics">Calisthenics & Rings</button>
+            <button class="pill-btn" data-filter="strength">Strength & Power</button>
+            <button class="pill-btn" data-filter="conditioning">High-Metabolic</button>
+            <button class="pill-btn" data-filter="recovery">Recovery & Longevity</button>
+          </div>
+        </div>
+
+        <div class="programs-grid" id="programs-container">
+          
+          <!-- Program 1 -->
+          <div class="program-card glass-card tilt-effect" data-category="strength">
+            <div class="program-img-wrap">
+              <img src="https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=700&auto=format&fit=crop&q=80" alt="FORGE Olympic Weightlifting" class="program-img" loading="lazy">
+              <span class="intensity-badge">MAX FORCE • 95%</span>
+            </div>
+            <div class="program-content">
+              <div class="program-meta">
+                <span>⏱ 75 Mins</span>
+                <span>🔥 650 kcal</span>
+                <span>🏋️ Olympic Barbells</span>
+              </div>
+              <h3 class="program-title">FORGE TITAN: OLYMPIC LIFTING</h3>
+              <p class="program-desc">
+                Snatch, clean & jerk, and heavy squat mastery with video frame-by-frame analysis and calibrated competition plates.
+              </p>
+              <ul class="program-features">
+                <li>VBT (Velocity Based Training) Bar Sensors</li>
+                <li>1-on-1 Platform Coaching ratio 4:1</li>
+                <li>Comprehensive CNS Activation Protocols</li>
+              </ul>
+              <button class="btn btn-outline btn-block book-class-trigger" data-program="FORGE Titan: Olympic Lifting">
+                <span>Book Free Trial Session</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Program 2 -->
+          <div class="program-card glass-card tilt-effect" data-category="conditioning">
+            <div class="program-img-wrap">
+              <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=700&auto=format&fit=crop&q=80" alt="Metabolic conditioning class" class="program-img" loading="lazy">
+              <span class="intensity-badge badge-volt">HIGH METABOLIC • 90%</span>
+            </div>
+            <div class="program-content">
+              <div class="program-meta">
+                <span>⏱ 55 Mins</span>
+                <span>🔥 850 kcal</span>
+                <span>⚡ Keiser & Assault</span>
+              </div>
+              <h3 class="program-title">KINETIX PULSE: HYBRID METCON</h3>
+              <p class="program-desc">
+                High-density anaerobic intervals fusing air-resistance bikes, sled pushes, ski-ergs, and sandbag carries.
+              </p>
+              <ul class="program-features">
+                <li>Real-time Polar Heart-rate Biometrics</li>
+                <li>Lactate Threshold Expansion</li>
+                <li>VO2 Max Metabolic Conditioning</li>
+              </ul>
+              <button class="btn btn-outline btn-block book-class-trigger" data-program="Kinetix Pulse: Hybrid MetCon">
+                <span>Book Free Trial Session</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Program 3 -->
+          <div class="program-card glass-card tilt-effect" data-category="strength">
+            <div class="program-img-wrap">
+              <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=700&auto=format&fit=crop&q=80" alt="Hypertrophy training" class="program-img" loading="lazy">
+              <span class="intensity-badge">HYPERTROPHY • 85%</span>
+            </div>
+            <div class="program-content">
+              <div class="program-meta">
+                <span>⏱ 60 Mins</span>
+                <span>🔥 520 kcal</span>
+                <span>📐 Dumbbells & Cables</span>
+              </div>
+              <h3 class="program-title">ANATOMY FORGE: HYPERTROPHY</h3>
+              <p class="program-desc">
+                Targeted mechanical tension and metabolic stress protocols designed for maximum muscular symmetry and aesthetic density.
+              </p>
+              <ul class="program-features">
+                <li>Lengthened Partials & Stretch-Mediated Sets</li>
+                <li>Biomechanical Joint-Friendly Vectors</li>
+                <li>Individual Muscle Activation Tracking</li>
+              </ul>
+              <button class="btn btn-outline btn-block book-class-trigger" data-program="Anatomy Forge: Hypertrophy">
+                <span>Book Free Trial Session</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Program 4 -->
+          <div class="program-card glass-card tilt-effect" data-category="conditioning">
+            <div class="program-img-wrap">
+              <img src="https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=700&auto=format&fit=crop&q=80" alt="Tactical combat boxing" class="program-img" loading="lazy">
+              <span class="intensity-badge badge-volt">COMBAT AGILITY • 92%</span>
+            </div>
+            <div class="program-content">
+              <div class="program-meta">
+                <span>⏱ 60 Mins</span>
+                <span>🔥 780 kcal</span>
+                <span>🥊 Aqua-Bags & Gloves</span>
+              </div>
+              <h3 class="program-title">TACTICAL COMBAT & STRIKING</h3>
+              <p class="program-desc">
+                Authentic pugilism, heavy bag power drills, slip-line footwork, and core rotational torque in our regulation octagon ring.
+              </p>
+              <ul class="program-features">
+                <li>Professional Boxing Coach Instruction</li>
+                <li>Impact Speed Force Sensors</li>
+                <li>Rotational Power & Neck Conditioning</li>
+              </ul>
+              <button class="btn btn-outline btn-block book-class-trigger" data-program="Tactical Combat & Striking">
+                <span>Book Free Trial Session</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Program 5 -->
+          <div class="program-card glass-card tilt-effect" data-category="recovery">
+            <div class="program-img-wrap">
+              <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=700&auto=format&fit=crop&q=80" alt="Athletic recovery and mobility" class="program-img" loading="lazy">
+              <span class="intensity-badge badge-cyan">RESTORATIVE • 40%</span>
+            </div>
+            <div class="program-content">
+              <div class="program-meta">
+                <span>⏱ 45 Mins</span>
+                <span>🧊 Active Chill</span>
+                <span>🧘 FRC Mobility</span>
+              </div>
+              <h3 class="program-title">KINETIC RESET & MOBILITY</h3>
+              <p class="program-desc">
+                Functional Range Conditioning (FRC), CARs (Controlled Articular Rotations), and myofascial decompression to unlock athletic joints.
+              </p>
+              <ul class="program-features">
+                <li>Spine & Hip Capsule Decompression</li>
+                <li>Parasympathetic Nervous System Reset</li>
+                <li>Joint Longevity & Injury Resistance</li>
+              </ul>
+              <button class="btn btn-outline btn-block book-class-trigger" data-program="Kinetic Reset & Mobility">
+                <span>Book Free Trial Session</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Program 6 -->
+          <div class="program-card glass-card tilt-effect" data-category="recovery">
+            <div class="program-img-wrap">
+              <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=700&auto=format&fit=crop&q=80" alt="Cryotherapy and sauna suite" class="program-img" loading="lazy">
+              <span class="intensity-badge badge-cyan">CELLULAR REGEN • 0%</span>
+            </div>
+            <div class="program-content">
+              <div class="program-meta">
+                <span>⏱ 30 Mins</span>
+                <span>❄️ -110°C Cryo</span>
+                <span>♨️ 90°C Cedar Sauna</span>
+              </div>
+              <h3 class="program-title">CRYOSPA & HYPERBARIC LAB</h3>
+              <p class="program-desc">
+                Sub-zero cryo-chamber exposure followed by infrared cedar sauna thermal contrast, NormaTec lymph compression, and hyperbaric O2.
+              </p>
+              <ul class="program-features">
+                <li>Dramatic Inflammation Reduction</li>
+                <li>Enhanced Mitochondrial Density</li>
+                <li>Deep Sleep & Cortisol Optimization</li>
+              </ul>
+              <button class="btn btn-outline btn-block book-class-trigger" data-program="CryoSpa & Hyperbaric Lab">
+                <span>Book Free Trial Session</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Program 7: Calisthenics & Levers -->
+          <div class="program-card glass-card tilt-effect" data-category="calisthenics">
+            <div class="program-img-wrap">
+              <img src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=700&auto=format&fit=crop&q=80" alt="Calisthenics muscle ups and bar levers" class="program-img" loading="lazy">
+              <span class="intensity-badge badge-volt">BODYWEIGHT POWER • 92%</span>
+            </div>
+            <div class="program-content">
+              <div class="program-meta">
+                <span>⏱ 70 Mins</span>
+                <span>🔥 580 kcal</span>
+                <span>🤸 Rig Bars & Stall Walls</span>
+              </div>
+              <h3 class="program-title">FORGE KINETIC: PURE CALISTHENICS</h3>
+              <p class="program-desc">
+                Master bodyweight biomechanics: strict muscle-ups, front lever holds, planche progressions, and hollow-body stabilization.
+              </p>
+              <ul class="program-features">
+                <li>Straight-Arm Scapular Neuromuscular Drills</li>
+                <li>Step-by-step Banded to Freestanding Planche Progressions</li>
+                <li>Anti-Extension Core Torment & L-Sit Blocks</li>
+              </ul>
+              <button class="btn btn-outline btn-block book-class-trigger" data-program="Forge Kinetic: Pure Calisthenics">
+                <span>Book Free Trial Session</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Program 8: Olympic Gymnastic Rings -->
+          <div class="program-card glass-card tilt-effect" data-category="calisthenics">
+            <div class="program-img-wrap">
+              <img src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=700&auto=format&fit=crop&q=80" alt="Olympic gymnastic rings strength training" class="program-img" loading="lazy">
+              <span class="intensity-badge badge-cyan">RING TORQUE • 96%</span>
+            </div>
+            <div class="program-content">
+              <div class="program-meta">
+                <span>⏱ 60 Mins</span>
+                <span>🔥 620 kcal</span>
+                <span>⭕ Birch Wood Rings</span>
+              </div>
+              <h3 class="program-title">AERIAL RINGS: GYMNASTIC STRENGTH</h3>
+              <p class="program-desc">
+                Instability-driven strength on competition wood rings. False grip conditioning, Bulgarian ring dips, and inverted levers.
+              </p>
+              <ul class="program-features">
+                <li>False-Grip Wrist Tendon Bulletproofing</li>
+                <li>Ring Muscle-Up Transition & Turnover Mastery</li>
+                <li>Iron Cross & Back Lever Isometric Prep</li>
+              </ul>
+              <button class="btn btn-outline btn-block book-class-trigger" data-program="Aerial Rings: Gymnastic Strength">
+                <span>Book Free Trial Session</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Program 9: Weighted Calisthenics & Streetlifting -->
+          <div class="program-card glass-card tilt-effect" data-category="calisthenics">
+            <div class="program-img-wrap">
+              <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=700&auto=format&fit=crop&q=80" alt="Weighted calisthenics pull ups" class="program-img" loading="lazy">
+              <span class="intensity-badge">MAX OVERLOAD • 98%</span>
+            </div>
+            <div class="program-content">
+              <div class="program-meta">
+                <span>⏱ 75 Mins</span>
+                <span>🔥 710 kcal</span>
+                <span>⛓️ Dip Belts & Iron</span>
+              </div>
+              <h3 class="program-title">STREETLIFTING: WEIGHTED CALISTHENICS</h3>
+              <p class="program-desc">
+                Heavy external loads applied to gymnastics movements. Pull-ups with +32kg to +60kg, heavy bar dips, and handstand presses.
+              </p>
+              <ul class="program-features">
+                <li>Competitive Streetlifting 1RM Periodization</li>
+                <li>Weighted Pull-up & Dip Force Velocity Tracking</li>
+                <li>Scapular Depression Power Under Extreme Tension</li>
+              </ul>
+              <button class="btn btn-outline btn-block book-class-trigger" data-program="Streetlifting: Weighted Calisthenics">
+                <span>Book Free Trial Session</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Weekly Class Schedule Quick Look Modal Trigger -->
+        <div class="schedule-callout glass-card">
+          <div class="callout-content">
+            <div class="callout-icon">📅</div>
+            <div>
+              <h4>Looking for our Live Class Timetable?</h4>
+              <p>Over 85 coached sessions weekly from 5:30 AM to 10:00 PM across 3 specialized training arenas.</p>
+            </div>
+          </div>
+          <button class="btn btn-secondary" id="btn-open-schedule">
+            <span>View Interactive Schedule</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. 3D FACILITIES SHOWCASE SECTION -->
+    <section id="facilities" class="facilities-section">
+      <div class="section-container">
+        <div class="section-header text-center">
+          <span class="section-tag">28,000 SQ FT CAMPUS</span>
+          <h2 class="section-title">THE ARCHITECTURE OF <span class="text-gradient">PERFORMANCE</span></h2>
+          <p class="section-subtitle">
+            Engineered acoustic dampening, hospital-grade HEPA air filtration, calibrated competition surfaces, and Olympic equipment that never compromises.
+          </p>
+        </div>
+
+        <!-- Interactive Facility Zones Tab Switcher -->
+        <div class="facility-tabs-wrap">
+          <div class="facility-tabs" id="facility-tabs">
+            <button class="facility-tab active" data-zone="power-hall">
+              <span class="zone-number">01</span>
+              <span>Olympic Power Hall</span>
+            </button>
+            <button class="facility-tab" data-zone="cardio-deck">
+              <span class="zone-number">02</span>
+              <span>Metabolic Mezzanine</span>
+            </button>
+            <button class="facility-tab" data-zone="combat-ring">
+              <span class="zone-number">03</span>
+              <span>Combat & Octagon Pit</span>
+            </button>
+            <button class="facility-tab" data-zone="recovery-spa">
+              <span class="zone-number">04</span>
+              <span>Cryo & Thermal Spa</span>
+            </button>
+            <button class="facility-tab" data-zone="turf-track">
+              <span class="zone-number">05</span>
+              <span>40m Sprint Turf Track</span>
+            </button>
+            <button class="facility-tab" data-zone="calisthenics-park">
+              <span class="zone-number">06</span>
+              <span>Calisthenics & Rig Jungle</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Active Zone Showcase Display -->
+        <div class="facility-display glass-card" id="facility-display">
+          <div class="facility-visual">
+            <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1200&auto=format&fit=crop&q=80" alt="Olympic Power Hall" id="facility-img" class="facility-main-img">
+            <div class="facility-badge-float" id="facility-badge">ZONE 01 • STRENGTH SANCTUM</div>
+          </div>
+          <div class="facility-info">
+            <h3 class="facility-zone-title" id="facility-title">Olympic Power Hall</h3>
+            <p class="facility-zone-desc" id="facility-desc">
+              12 fully-equipped competition Olympic weightlifting platforms constructed with solid oak centers and vibration-absorbing rubber tiles. Loaded exclusively with IWF-certified Eleiko competition barbells, calibrated discs, and squat racks.
+            </p>
+            
+            <div class="facility-specs-grid" id="facility-specs">
+              <div class="spec-card">
+                <span class="spec-num">12</span>
+                <span class="spec-text">Olympic Lifting Platforms</span>
+              </div>
+              <div class="spec-card">
+                <span class="spec-num">15,000+ KG</span>
+                <span class="spec-text">Eleiko Calibrated Discs</span>
+              </div>
+              <div class="spec-card">
+                <span class="spec-num">Dumbbells</span>
+                <span class="spec-text">Pairs up to 200 LBS (90 KG)</span>
+              </div>
+              <div class="spec-card">
+                <span class="spec-num">Floor Acoustic</span>
+                <span class="spec-text">Regupol Sound Isolation</span>
+              </div>
+            </div>
+
+            <div class="facility-actions">
+              <a href="#contact" class="btn btn-primary">
+                <span>Book In-Person Tour</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+              <button class="btn btn-secondary" id="btn-camera-zone-focus">
+                <span>Re-center 3D View</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. TEAM & TRAINERS SECTION -->
+    <section id="trainers" class="trainers-section">
+      <div class="section-container">
+        <div class="section-header text-center">
+          <span class="section-tag">WORLD-CLASS PEDIGREE</span>
+          <h2 class="section-title">MEET THE <span class="text-gradient">MASTER COACHES</span></h2>
+          <p class="section-subtitle">
+            Every coach at FORGE holds collegiate degrees in Exercise Science, Master CSCS credentials, or former Olympic competitor status. No influencers. Only results.
+          </p>
+        </div>
+
+        <div class="trainers-grid">
+          
+          <!-- Trainer 1 -->
+          <div class="trainer-card glass-card tilt-effect">
+            <div class="trainer-img-wrap">
+              <img src="https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=600&auto=format&fit=crop&q=80" alt="Marcus Vance" class="trainer-img" loading="lazy">
+              <div class="trainer-overlay-tag">DIRECTOR OF STRENGTH</div>
+            </div>
+            <div class="trainer-details">
+              <h3 class="trainer-name">Marcus Vance</h3>
+              <span class="trainer-credentials">M.Sc. Biomechanics • CSCS • USAW Senior Coach</span>
+              <p class="trainer-bio">
+                Former Olympic Team lifting coach. Specializes in maximum force production, spinal mechanics, and barbell velocity analytics.
+              </p>
+              <div class="trainer-specialties">
+                <span class="spec-tag">Olympic Lifts</span>
+                <span class="spec-tag">Powerlifting</span>
+                <span class="spec-tag">Force Profiling</span>
+              </div>
+              <button class="btn btn-outline btn-sm btn-block trainer-book-btn" data-trainer="Marcus Vance">
+                <span>Request 1-on-1 Consult</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Trainer 2 -->
+          <div class="trainer-card glass-card tilt-effect">
+            <div class="trainer-img-wrap">
+              <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=600&auto=format&fit=crop&q=80" alt="Elena Rostova" class="trainer-img" loading="lazy">
+              <div class="trainer-overlay-tag">HEAD OF METABOLIC SYSTEMS</div>
+            </div>
+            <div class="trainer-details">
+              <h3 class="trainer-name">Elena Rostova</h3>
+              <span class="trainer-credentials">Ex-National Track Athlete • CSCS • FMS Level 2</span>
+              <p class="trainer-bio">
+                Elite conditioning specialist with 12 years prepping UFC athletes and tactical military teams in anaerobic capacity and speed.
+              </p>
+              <div class="trainer-specialties">
+                <span class="spec-tag">Hybrid MetCon</span>
+                <span class="spec-tag">VO2 Max</span>
+                <span class="spec-tag">Sprint Mechanics</span>
+              </div>
+              <button class="btn btn-outline btn-sm btn-block trainer-book-btn" data-trainer="Elena Rostova">
+                <span>Request 1-on-1 Consult</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Trainer 3 -->
+          <div class="trainer-card glass-card tilt-effect">
+            <div class="trainer-img-wrap">
+              <img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&auto=format&fit=crop&q=80" alt="David Chen" class="trainer-img" loading="lazy">
+              <div class="trainer-overlay-tag">HYPERTROPHY & REHAB LEAD</div>
+            </div>
+            <div class="trainer-details">
+              <h3 class="trainer-name">David Chen</h3>
+              <span class="trainer-credentials">Doctorate of Physical Therapy (DPT) • CSCS</span>
+              <p class="trainer-bio">
+                Bridges the chasm between orthopedic physical therapy and serious bodybuilding. Engineered for lifting without joint destruction.
+              </p>
+              <div class="trainer-specialties">
+                <span class="spec-tag">Hypertrophy</span>
+                <span class="spec-tag">Joint Longevity</span>
+                <span class="spec-tag">Post-Rehab</span>
+              </div>
+              <button class="btn btn-outline btn-sm btn-block trainer-book-btn" data-trainer="David Chen">
+                <span>Request 1-on-1 Consult</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Trainer 4 -->
+          <div class="trainer-card glass-card tilt-effect">
+            <div class="trainer-img-wrap">
+              <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&auto=format&fit=crop&q=80" alt="Maya Sterling" class="trainer-img" loading="lazy">
+              <div class="trainer-overlay-tag">RECOVERY & METABOLIC NUTRITION</div>
+            </div>
+            <div class="trainer-details">
+              <h3 class="trainer-name">Dr. Maya Sterling</h3>
+              <span class="trainer-credentials">Ph.D. Sports Nutrition • CISSN • Cryo Specialist</span>
+              <p class="trainer-bio">
+                Advises professional endurance and power athletes on fueling strategies, endocrine optimization, and cold-shock thermogenesis.
+              </p>
+              <div class="trainer-specialties">
+                <span class="spec-tag">Hormone Health</span>
+                <span class="spec-tag">Macro Periodization</span>
+                <span class="spec-tag">Cold Therapy</span>
+              </div>
+              <button class="btn btn-outline btn-sm btn-block trainer-book-btn" data-trainer="Dr. Maya Sterling">
+                <span>Request 1-on-1 Consult</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Trainer 5: Calisthenics & Gymnastics Lead -->
+          <div class="trainer-card glass-card tilt-effect">
+            <div class="trainer-img-wrap">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80" alt="Viktor Kroll" class="trainer-img" loading="lazy">
+              <div class="trainer-overlay-tag">HEAD OF CALISTHENICS & RINGS</div>
+            </div>
+            <div class="trainer-details">
+              <h3 class="trainer-name">Viktor Kroll</h3>
+              <span class="trainer-credentials">World Streetlifting Champion • Master CSCS</span>
+              <p class="trainer-bio">
+                Former international competitive gymnast and streetlifting record holder (+92.5kg pull-up). Specializes in straight-arm scapular strength, iron cross progressions, and lever mechanics.
+              </p>
+              <div class="trainer-specialties">
+                <span class="spec-tag">Planche & Levers</span>
+                <span class="spec-tag">Olympic Rings</span>
+                <span class="spec-tag">Weighted Pull-ups</span>
+              </div>
+              <button class="btn btn-outline btn-sm btn-block trainer-book-btn" data-trainer="Viktor Kroll">
+                <span>Request 1-on-1 Consult</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. INTERACTIVE CALORIC & WORKOUT TARGET CALCULATOR -->
+    <section id="calculator" class="calculator-section">
+      <div class="section-container">
+        <div class="calc-wrapper glass-card">
+          <div class="calc-header text-center">
+            <span class="section-tag">INTERACTIVE BIOMETRIC TOOL</span>
+            <h2 class="section-title">CALCULATE YOUR <span class="text-gradient">PERFORMANCE TARGETS</span></h2>
+            <p class="section-subtitle">
+              Input your physical metrics to estimate daily caloric targets, macronutrient split, and optimal training track.
+            </p>
+          </div>
+
+          <div class="calc-body-grid">
+            <div class="calc-inputs-column">
+              
+              <!-- Goal Selection -->
+              <div class="input-group">
+                <label class="input-label" for="calc-goal">Primary Athletic Goal</label>
+                <div class="segmented-control" id="calc-goal-group">
+                  <button type="button" class="seg-btn active" data-goal="muscle">Hypertrophy (Lean Mass)</button>
+                  <button type="button" class="seg-btn" data-goal="calisthenics">Calisthenics (Skill & Levers)</button>
+                  <button type="button" class="seg-btn" data-goal="strength">Max Strength & Power</button>
+                  <button type="button" class="seg-btn" data-goal="fatloss">Fat Loss & Conditioning</button>
+                </div>
+              </div>
+
+              <!-- Bodyweight Slider -->
+              <div class="input-group">
+                <div class="label-row">
+                  <label class="input-label" for="calc-weight-slider">Body Weight</label>
+                  <span class="slider-val" id="calc-weight-val">80 kg (176 lbs)</span>
+                </div>
+                <input type="range" id="calc-weight-slider" min="45" max="140" value="80" class="custom-slider">
+              </div>
+
+              <!-- Training Days Slider -->
+              <div class="input-group">
+                <div class="label-row">
+                  <label class="input-label" for="calc-days-slider">Weekly Training Frequency</label>
+                  <span class="slider-val" id="calc-days-val">4 Days / Week</span>
+                </div>
+                <input type="range" id="calc-days-slider" min="2" max="7" value="4" class="custom-slider">
+              </div>
+
+              <!-- Gender & Experience -->
+              <div class="input-row-dual">
+                <div class="input-subgroup">
+                  <label class="input-label" for="calc-gender">Biological Sex</label>
+                  <select id="calc-gender" class="custom-select">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                </div>
+                <div class="input-subgroup">
+                  <label class="input-label" for="calc-exp">Experience Level</label>
+                  <select id="calc-exp" class="custom-select">
+                    <option value="intermediate">Intermediate (1-3 yrs)</option>
+                    <option value="beginner">Beginner (< 1 yr)</option>
+                    <option value="advanced">Advanced (3+ yrs)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Calculation Output Column -->
+            <div class="calc-results-column">
+              <div class="result-highlight-card">
+                <span class="result-label">ESTIMATED DAILY CALORIES</span>
+                <div class="result-calories-display">
+                  <span class="cal-number" id="res-calories">2,850</span>
+                  <span class="cal-unit">KCAL / DAY</span>
+                </div>
+                <span class="result-note" id="res-note">Tailored for progressive lean tissue accretion.</span>
+              </div>
+
+              <div class="macros-breakdown">
+                <div class="macro-bar-container">
+                  <div class="macro-segment protein" id="bar-protein" style="width: 30%;"></div>
+                  <div class="macro-segment carbs" id="bar-carbs" style="width: 45%;"></div>
+                  <div class="macro-segment fats" id="bar-fats" style="width: 25%;"></div>
+                </div>
+
+                <div class="macro-labels-grid">
+                  <div class="macro-box">
+                    <span class="macro-dot protein-dot"></span>
+                    <span class="macro-title">Protein</span>
+                    <strong class="macro-g" id="res-protein">180g</strong>
+                    <span class="macro-pct">30%</span>
+                  </div>
+                  <div class="macro-box">
+                    <span class="macro-dot carbs-dot"></span>
+                    <span class="macro-title">Carbohydrates</span>
+                    <strong class="macro-g" id="res-carbs">320g</strong>
+                    <span class="macro-pct">45%</span>
+                  </div>
+                  <div class="macro-box">
+                    <span class="macro-dot fats-dot"></span>
+                    <span class="macro-title">Fats</span>
+                    <strong class="macro-g" id="res-fats">79g</strong>
+                    <span class="macro-pct">25%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="recommended-track-card">
+                <span class="rec-label">RECOMMENDED FORGE TRACK</span>
+                <strong class="rec-track-name" id="res-track">FORGE KINETIC: PURE CALISTHENICS</strong>
+                <a href="#contact" class="btn btn-primary btn-sm btn-block">
+                  <span>Apply This Program Target</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. PRICING & MEMBERSHIP TIERS SECTION -->
+    <section id="pricing" class="pricing-section">
+      <div class="section-container">
+        <div class="section-header text-center">
+          <span class="section-tag">INVESTMENT IN LONGEVITY</span>
+          <h2 class="section-title">TRANSPARENT <span class="text-gradient">MEMBERSHIPS</span></h2>
+          <p class="section-subtitle">
+            All memberships include full access to Olympic lifting areas, smart locker suites with sauna, towel service, and our biometric mobile app. No hidden joining fees.
+          </p>
+
+          <!-- Billing Period Toggle -->
+          <div class="billing-toggle-wrap">
+            <span class="billing-label" id="label-monthly">Monthly</span>
+            <button class="toggle-switch active" id="billing-toggle" aria-label="Toggle Annual Billing">
+              <span class="switch-handle"></span>
+            </button>
+            <span class="billing-label" id="label-annual">
+              Annual Billing
+              <span class="save-badge">SAVE 20%</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="pricing-grid">
+          
+          <!-- Tier 1: Core Athlete -->
+          <div class="pricing-card glass-card">
+            <div class="card-tier-header">
+              <h3 class="tier-name">CORE ATHLETE</h3>
+              <p class="tier-tagline">Essential access to world-class strength hardware and locker amenities.</p>
+              <div class="price-row">
+                <span class="currency">$</span>
+                <span class="price-amount" data-monthly="99" data-annual="79">79</span>
+                <span class="price-term">/ month</span>
+              </div>
+              <span class="billed-note">Billed annually ($948/yr)</span>
+            </div>
+
+            <ul class="tier-features">
+              <li><span class="check-icon">✓</span> 24/7 Access to Main Power Hall & Cardio Deck</li>
+              <li><span class="check-icon">✓</span> Full Eleiko Weightlifting Equipment Access</li>
+              <li><span class="check-icon">✓</span> Cedar Dry Sauna & Executive Lockers</li>
+              <li><span class="check-icon">✓</span> Digital Workout Log & 3D Exercise Tracking</li>
+              <li class="disabled"><span class="cross-icon">✕</span> Unlimited Group Coaching Classes</li>
+              <li class="disabled"><span class="cross-icon">✕</span> Cryotherapy & Hyperbaric Chamber</li>
+              <li class="disabled"><span class="cross-icon">✕</span> Monthly 1-on-1 Biomechanics Review</li>
+            </ul>
+
+            <button class="btn btn-outline btn-block select-plan-btn" data-plan="Core Athlete">
+              <span>Choose Core Athlete</span>
+            </button>
+          </div>
+
+          <!-- Tier 2: Pro Performance (Featured / Highlighted) -->
+          <div class="pricing-card glass-card popular-tier">
+            <div class="popular-ribbon">MOST POPULAR</div>
+            <div class="card-tier-header">
+              <h3 class="tier-name">PRO PERFORMANCE</h3>
+              <p class="tier-tagline">Complete coached group classes, biometric heart-rate tracking, and monthly recovery.</p>
+              <div class="price-row">
+                <span class="currency">$</span>
+                <span class="price-amount" data-monthly="169" data-annual="135">135</span>
+                <span class="price-term">/ month</span>
+              </div>
+              <span class="billed-note">Billed annually ($1,620/yr)</span>
+            </div>
+
+            <ul class="tier-features">
+              <li><span class="check-icon">✓</span> <strong>Unlimited</strong> Group Performance Classes (Titan, Pulse, Forge)</li>
+              <li><span class="check-icon">✓</span> 24/7 Campus & Olympic Floor Access</li>
+              <li><span class="check-icon">✓</span> 4x Cryo & Infrared Recovery Sessions per Month</li>
+              <li><span class="check-icon">✓</span> Polar Live Heart-rate Sensor Kit Included</li>
+              <li><span class="check-icon">✓</span> Bi-Monthly InBody Body Composition Scans</li>
+              <li><span class="check-icon">✓</span> 2 Monthly Guest Passes for Training Partners</li>
+              <li class="disabled"><span class="cross-icon">✕</span> Dedicated Private 1-on-1 Coach</li>
+            </ul>
+
+            <button class="btn btn-primary btn-block select-plan-btn" data-plan="Pro Performance">
+              <span>Choose Pro Performance</span>
+            </button>
+          </div>
+
+          <!-- Tier 3: FORGE VIP Elite -->
+          <div class="pricing-card glass-card">
+            <div class="card-tier-header">
+              <h3 class="tier-name">FORGE VIP ELITE</h3>
+              <p class="tier-tagline">The ultimate tier. Unlimited cryo, dedicated 1-on-1 master coach, and custom nutritional protocols.</p>
+              <div class="price-row">
+                <span class="currency">$</span>
+                <span class="price-amount" data-monthly="269" data-annual="215">215</span>
+                <span class="price-term">/ month</span>
+              </div>
+              <span class="billed-note">Billed annually ($2,580/yr)</span>
+            </div>
+
+            <ul class="tier-features">
+              <li><span class="check-icon">✓</span> <strong>Unlimited</strong> Cryotherapy, Hyperbaric & Infrared Spa</li>
+              <li><span class="check-icon">✓</span> Weekly 1-on-1 Session with Master CSCS Coach</li>
+              <li><span class="check-icon">✓</span> Personalized Nutrition & Bloodwork Guidance</li>
+              <li><span class="check-icon">✓</span> Permanent Reserved Locker & Laundry Service</li>
+              <li><span class="check-icon">✓</span> Unlimited Guest Passes Anytime</li>
+              <li><span class="check-icon">✓</span> Priority Booking for Visiting Master Seminars</li>
+              <li><span class="check-icon">✓</span> Custom FORGE Titanium Gym Bag & Gear</li>
+            </ul>
+
+            <button class="btn btn-outline btn-block select-plan-btn" data-plan="FORGE VIP Elite">
+              <span>Choose VIP Elite</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Corporate & Custom Callout -->
+        <div class="pricing-footer text-center">
+          <p>Looking for corporate executive memberships, athletic team dryland blocks, or custom coaching? <a href="#contact" class="text-volt">Speak with our Membership Director</a>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. INQUIRY / CONTACT FORM & LOCATION SECTION -->
+    <section id="contact" class="contact-section">
+      <div class="section-container">
+        <div class="section-header text-center">
+          <span class="section-tag">COMMENCE YOUR TRANSFORMATION</span>
+          <h2 class="section-title">REQUEST AN <span class="text-gradient">INQUIRY & VIP PASS</span></h2>
+          <p class="section-subtitle">
+            Experience the FORGE difference in person. Fill out the form below to receive a complimentary 1-day VIP access pass and personalized facility walkthrough.
+          </p>
+        </div>
+
+        <div class="contact-grid">
+          
+          <!-- Contact Form Card -->
+          <div class="contact-form-card glass-card">
+            <div class="form-card-header">
+              <div class="header-icon">✉️</div>
+              <div>
+                <h3 class="form-title">Direct Membership & VIP Inquiry</h3>
+                <p class="form-subtitle">Our athlete intake team will contact you within 2 business hours.</p>
+              </div>
+            </div>
+
+            <form id="inquiry-form" class="inquiry-form" novalidate>
+              <div class="form-row-dual">
+                <div class="form-field">
+                  <label for="contact-name" class="field-label">Full Name <span class="required">*</span></label>
+                  <input type="text" id="contact-name" name="name" class="form-input" placeholder="e.g. Alexander Hayes" required>
+                  <span class="field-error" id="name-error">Please enter your full name.</span>
+                </div>
+                
+                <div class="form-field">
+                  <label for="contact-email" class="field-label">Email Address <span class="required">*</span></label>
+                  <input type="email" id="contact-email" name="email" class="form-input" placeholder="alexander@domain.com" required>
+                  <span class="field-error" id="email-error">Please enter a valid email address.</span>
+                </div>
+              </div>
+
+              <div class="form-row-dual">
+                <div class="form-field">
+                  <label for="contact-phone" class="field-label">Phone Number</label>
+                  <input type="tel" id="contact-phone" name="phone" class="form-input" placeholder="+1 (555) 019-2834">
+                </div>
+
+                <div class="form-field">
+                  <label for="contact-interest" class="field-label">Primary Interest</label>
+                  <select id="contact-interest" name="interest" class="form-input form-select">
+                    <option value="vip-pass">Free 1-Day VIP Trial Pass</option>
+                    <option value="olympic-lifting">Olympic Weightlifting / Titan</option>
+                    <option value="personal-coaching">1-on-1 Master Coaching</option>
+                    <option value="pro-performance">Pro Performance Membership</option>
+                    <option value="cryo-recovery">CryoSpa & Recovery Lab</option>
+                    <option value="general-inquiry">General Facility Tour</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="contact-message" class="field-label">Inquiry / Athletic Background <span class="required">*</span></label>
+                <textarea id="contact-message" name="message" rows="4" class="form-input form-textarea" placeholder="Tell us about your current training routine, goals, or questions regarding equipment, schedules, or pricing..." required></textarea>
+                <span class="field-error" id="message-error">Please enter a brief message or question.</span>
+              </div>
+
+              <div class="form-checkbox-row">
+                <label class="custom-checkbox-label">
+                  <input type="checkbox" id="contact-consent" required checked>
+                  <span class="checkbox-box"></span>
+                  <span class="checkbox-text">I consent to receiving training updates, schedule alerts, and VIP pass confirmations.</span>
+                </label>
+              </div>
+
+              <button type="submit" id="submit-inquiry-btn" class="btn btn-primary btn-lg btn-block">
+                <span class="btn-text">Submit VIP Inquiry</span>
+                <span class="btn-spinner hidden"></span>
+                <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+            </form>
+          </div>
+
+          <!-- Contact Information & Facility Coordinates -->
+          <div class="contact-info-column">
+            
+            <div class="info-card glass-card">
+              <h4 class="info-card-title">HEADQUARTERS & ARENA</h4>
+              <ul class="info-list">
+                <li class="info-item">
+                  <span class="info-icon">📍</span>
+                  <div>
+                    <strong>FORGE PERFORMANCE LAB</strong>
+                    <p>480 Olympic Boulevard, Suite 100<br>Silicon Athletic District, CA 94025</p>
+                  </div>
+                </li>
+
+                <li class="info-item">
+                  <span class="info-icon">📞</span>
+                  <div>
+                    <strong>Direct Concierge Desk</strong>
+                    <p>+1 (800) 582-FORGE (36743)<br>concierge@forgeperformance.com</p>
+                  </div>
+                </li>
+
+                <li class="info-item">
+                  <span class="info-icon">⏱</span>
+                  <div>
+                    <strong>Operational Hours</strong>
+                    <p>
+                      <strong>Members (All Tiers):</strong> 24 Hours / 7 Days<br>
+                      <strong>Staffed Coaching:</strong> Mon – Fri: 5:00 AM – 10:00 PM<br>
+                      <strong>Weekends:</strong> 6:00 AM – 9:00 PM
+                    </p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Stylized Interactive Map Card -->
+            <div class="map-card glass-card">
+              <div class="map-visual-simulation">
+                <div class="map-grid-lines"></div>
+                <div class="radar-ping"></div>
+                <div class="pin-marker">
+                  <div class="pin-dot"></div>
+                  <div class="pin-label">FORGE MAIN LAB</div>
+                </div>
+                <div class="map-overlay-info">
+                  <span>LAT 37.4529° N, LONG 122.1817° W</span>
+                  <span>PARKING: 250 Dedicated Private Spaces + EV Chargers</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fast Perks Banner -->
+            <div class="perks-banner glass-card">
+              <div class="perk-pill"><span>🔒</span> Private Security</div>
+              <div class="perk-pill"><span>🚿</span> Dyson Luxury Showers</div>
+              <div class="perk-pill"><span>📶</span> 10 Gbps Fiber WiFi</div>
+              <div class="perk-pill"><span>☕</span> Nitro Cold Brew Bar</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="site-footer">
+    <div class="section-container">
+      <div class="footer-grid">
+        
+        <div class="footer-brand-col">
+          <div class="brand-logo">
+            <span class="logo-symbol">
+              <svg viewBox="0 0 40 40" fill="none" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 2L37 32H3L20 2Z" stroke="#c6ff00" stroke-width="3" stroke-linejoin="round"/>
+                <path d="M20 12L30 30H10L20 12Z" fill="#c6ff00" fill-opacity="0.3"/>
+              </svg>
+            </span>
+            <div class="logo-text">
+              <span class="logo-title">FORGE</span>
+              <span class="logo-subtitle">PERFORMANCE</span>
+            </div>
+          </div>
+          <p class="footer-tagline">
+            The global gold standard in 3D athletic engineering, Olympic weightlifting, and sports longevity.
+          </p>
+          <div class="footer-socials">
+            <a href="#" class="social-link" aria-label="Instagram">IG</a>
+            <a href="#" class="social-link" aria-label="YouTube">YT</a>
+            <a href="#" class="social-link" aria-label="X / Twitter">X</a>
+            <a href="#" class="social-link" aria-label="LinkedIn">IN</a>
+          </div>
+        </div>
+
+        <div class="footer-nav-col">
+          <h5 class="footer-col-title">NAVIGATION</h5>
+          <ul class="footer-links">
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#about">About Philosophy</a></li>
+            <li><a href="#interactive-3d">3D Equipment Lab</a></li>
+            <li><a href="#programs">Training Tracks</a></li>
+            <li><a href="#facilities">Campus Facilities</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-nav-col">
+          <h5 class="footer-col-title">MEMBERSHIPS</h5>
+          <ul class="footer-links">
+            <li><a href="#pricing">Core Athlete</a></li>
+            <li><a href="#pricing">Pro Performance</a></li>
+            <li><a href="#pricing">FORGE VIP Elite</a></li>
+            <li><a href="#contact">Corporate Partnerships</a></li>
+            <li><a href="#contact">Visiting Drop-ins</a></li>
+            <li><a href="admin.html" target="_blank" class="text-volt" style="font-weight: 700;">📊 Admin Portal (CRM)</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-nav-col">
+          <h5 class="footer-col-title">INTELLIGENCE</h5>
+          <p class="newsletter-desc">Subscribe to our weekly biomechanics dispatch and training program updates.</p>
+          <form class="footer-newsletter-form" onsubmit="event.preventDefault(); alert('Subscribed to FORGE Biomechanics Dispatch!');">
+            <input type="email" placeholder="athlete@domain.com" class="newsletter-input" required>
+            <button type="submit" class="newsletter-btn">→</button>
+          </form>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 FORGE ATHLETIC LABS INC. ALL RIGHTS RESERVED.</p>
+        <div class="footer-legal">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Athletic Service</a>
+          <a href="#">Safety & Sanitation Protocols</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: Confirmation Toast / Success Modal for Inquiry Form -->
+  <div id="inquiry-success-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card glass-card">
+      <button class="modal-close-btn" id="modal-close-btn" aria-label="Close confirmation modal">✕</button>
+      <div class="modal-content text-center">
+        <div class="success-icon-badge">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#c6ff00" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <span class="modal-tag">INQUIRY CONFIRMED</span>
+        <h3 id="modal-title" class="modal-title">VIP ACCESS PASS RESERVED!</h3>
+        <p class="modal-desc">
+          Thank you, <strong id="modal-user-name" class="text-volt">Athlete</strong>! Your VIP Day Pass and consultation request have been routed directly to our Head Coaching Concierge.
+        </p>
+
+        <!-- Digital Pass Ticket Preview -->
+        <div class="digital-ticket">
+          <div class="ticket-header">
+            <span>FORGE • VIP PASS</span>
+            <span class="ticket-status">ACTIVE</span>
+          </div>
+          <div class="ticket-body">
+            <div class="ticket-code-label">CONFIRMATION VOUCHER</div>
+            <div class="ticket-code" id="modal-voucher-code">FORGE-VIP-84920</div>
+            <div class="ticket-sub">Present this digital pass at the front concierge desk for immediate check-in.</div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-primary btn-block" id="modal-finish-btn">
+            <span>Return to Site</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Interactive Weekly Schedule Modal -->
+  <div id="schedule-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="schedule-modal-title">
+    <div class="modal-card modal-lg glass-card">
+      <button class="modal-close-btn" id="schedule-close-btn" aria-label="Close schedule modal">✕</button>
+      <div class="modal-content">
+        <div class="schedule-header">
+          <span class="modal-tag">LIVE TIMETABLE</span>
+          <h3 id="schedule-modal-title" class="modal-title">WEEKLY COACHED TIMETABLE</h3>
+          <p class="modal-desc">Reserve your platform or conditioning station in advance.</p>
+        </div>
+
+        <!-- Schedule Day Filter -->
+        <div class="schedule-day-tabs" id="schedule-day-tabs">
+          <button class="day-tab active" data-day="mon">Monday</button>
+          <button class="day-tab" data-day="tue">Tuesday</button>
+          <button class="day-tab" data-day="wed">Wednesday</button>
+          <button class="day-tab" data-day="thu">Thursday</button>
+          <button class="day-tab" data-day="fri">Friday</button>
+          <button class="day-tab" data-day="sat">Saturday</button>
+        </div>
+
+        <div class="schedule-table-wrap">
+          <table class="schedule-table" id="schedule-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Program Session</th>
+                <th>Arena Zone</th>
+                <th>Coach</th>
+                <th>Capacity</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="schedule-tbody">
+              <!-- Dynamically populated via js/app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       FORGE AI CONCIERGE (OPENAI CHATBOT WIDGET)
+       ===================================================================== -->
+  <div class="forge-chatbot-wrapper" id="forge-chatbot-wrapper">
+    <!-- Floating Trigger Launcher Button -->
+    <button class="forge-chat-trigger" id="forge-chat-trigger" aria-label="Open FORGE AI Chatbot">
+      <div class="chat-trigger-pulse"></div>
+      <div class="chat-trigger-icon-wrap">
+        <!-- Chat icon -->
+        <svg class="chat-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+        </svg>
+        <!-- Close icon when open -->
+        <svg class="chat-close-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </div>
+      <span class="chat-trigger-pill">
+        <span class="trigger-dot"></span>
+        <span class="trigger-text">FORGE AI</span>
+      </span>
+      <span class="chat-unread-badge" id="chat-unread-badge">1</span>
+    </button>
+
+    <!-- Chatbot Window Panel -->
+    <div class="forge-chat-window" id="forge-chat-window" aria-hidden="true">
+      <!-- Window Header -->
+      <div class="chat-window-header">
+        <div class="chat-header-profile">
+          <div class="chat-avatar-ring">
+            <span class="chat-avatar-icon">⚡</span>
+            <span class="chat-online-beacon"></span>
+          </div>
+          <div class="chat-header-info">
+            <div class="chat-header-title-row">
+              <h4 class="chat-header-title">FORGE AI Concierge</h4>
+              <span class="chat-model-badge" id="chat-model-badge">GPT-4o Mini</span>
+            </div>
+            <p class="chat-header-subtitle" id="chat-status-subtitle">Live Athletic & Facility Assistant</p>
+          </div>
+        </div>
+        <div class="chat-header-actions">
+          <button class="chat-action-btn" id="chat-btn-settings" title="Change API Key Manually" aria-label="API Settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+              <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+            </svg>
+          </button>
+          <button class="chat-action-btn" id="chat-btn-clear" title="Clear conversation" aria-label="Clear chat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+            </svg>
+          </button>
+          <button class="chat-action-btn" id="chat-btn-close" title="Minimize chat" aria-label="Close chat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Manual API Key Settings Panel (Collapsible) -->
+      <div class="chat-settings-panel" id="chat-settings-panel" style="display: none;">
+        <div class="chat-settings-inner">
+          <div class="settings-title-row">
+            <h5 class="settings-title">⚙️ API Key Configuration</h5>
+            <span class="settings-status-pill" id="settings-status-pill">Active</span>
+          </div>
+          <p class="settings-subtext">Manually add or change your OpenAI (<code>sk-...</code>) or Groq (<code>gsk_...</code>) key below:</p>
+          
+          <div class="settings-input-group">
+            <label for="manual-api-key-input">API Key</label>
+            <div class="settings-input-wrapper">
+              <input type="password" id="manual-api-key-input" placeholder="Paste your API key here..." autocomplete="off" />
+              <button type="button" id="btn-toggle-key-visibility" class="btn-eye-toggle" title="Show/Hide">👁️</button>
+            </div>
+            <small class="settings-hint" id="current-key-hint">Current: Loading...</small>
+          </div>
+
+          <div class="settings-input-group">
+            <label for="manual-model-select">Preferred AI Model</label>
+            <select id="manual-model-select" class="settings-select">
+              <option value="openai/gpt-oss-120b">Groq: GPT OSS 120B (High Intelligence & Fast)</option>
+              <option value="openai/gpt-oss-20b">Groq: GPT OSS 20B (Ultra-Speed)</option>
+              <option value="gpt-4o-mini">OpenAI: GPT-4o Mini (Standard)</option>
+              <option value="gpt-4o">OpenAI: GPT-4o (Flagship)</option>
+            </select>
+          </div>
+
+          <div class="settings-buttons-row">
+            <button type="button" id="btn-save-key" class="btn-settings-save">Save & Activate</button>
+            <button type="button" id="btn-clear-key" class="btn-settings-clear">Remove Key</button>
+          </div>
+          <div id="settings-feedback" class="settings-feedback-msg"></div>
+        </div>
+      </div>
+
+      <!-- Quick Starter Chips Bar -->
+      <div class="chat-suggestions-bar">
+        <button class="chat-suggestion-chip" data-query="What calisthenics courses and ring training do you have?">🦾 Calisthenics & Rings</button>
+        <button class="chat-suggestion-chip" data-query="How do I claim the free 7-Day VIP Access Pass?">🎟️ 7-Day Free Pass</button>
+        <button class="chat-suggestion-chip" data-query="What are your membership plans and pricing?">💰 Membership Plans</button>
+        <button class="chat-suggestion-chip" data-query="What are the gym hours and where is FORGE located?">⏰ Hours & Location</button>
+        <button class="chat-suggestion-chip" data-query="Tell me about Master Coach Viktor Kroll and his background.">🏆 Coach Viktor Kroll</button>
+      </div>
+
+      <!-- Conversation Scroll Container -->
+      <div class="chat-messages-container" id="chat-messages-container">
+        <!-- Messages dynamically rendered via js/chatbot.js -->
+      </div>
+
+      <!-- Input Form -->
+      <form class="chat-input-form" id="chat-input-form">
+        <input 
+          type="text" 
+          id="chat-input-field" 
+          class="chat-input-field" 
+          placeholder="Ask anything about FORGE training, passes..." 
+          autocomplete="off" 
+          maxlength="1000"
+          required
+        />
+        <button type="submit" id="chat-send-btn" class="chat-send-btn" aria-label="Send message">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Local Self-Contained Three.js Vendor Libraries -->
+  <script src="vendor/three.min.js"></script>
+  <script src="vendor/OrbitControls.js"></script>
+
+  <!-- 3D Engine, Chatbot & Application Logic Scripts -->
+  <script src="js/three-scene.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/chatbot.js"></script>
+</body>
+</html>

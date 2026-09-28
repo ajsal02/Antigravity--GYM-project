@@ -1,0 +1,17 @@
+# Security & API Secrets (DO NOT COMMIT)
+.env
+
+# SQLite Local Database
+data/*.db
+
+# Python & OS Artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.DS_Store
+Thumbs.db

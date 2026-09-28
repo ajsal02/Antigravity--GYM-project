@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FORGE | Athlete Inquiry Admin Dashboard & CRM</title>
+  <meta name="description" content="Official athlete inquiries management portal and lead CRM for FORGE Athletic Labs.">
+  <meta name="theme-color" content="#000000">
+
+  <!-- Google Fonts: Syne, Outfit, Inter, Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800;900&family=Syne:wght@700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-deep: #000000;
+      --bg-surface: #0a0b0f;
+      --bg-surface-elevated: #111319;
+      --bg-glass-card: rgba(12, 13, 18, 0.85);
+      --color-volt: #d4ff00;
+      --color-volt-glow: rgba(212, 255, 0, 0.4);
+      --color-cyan: #00f5ff;
+      --color-crimson: #ff1a53;
+      --color-gold: #ffb703;
+      --color-green: #10b981;
+      --text-primary: #ffffff;
+      --text-secondary: #cbd5e1;
+      --text-muted: #8492a6;
+      --border-subtle: rgba(255, 255, 255, 0.14);
+      --border-medium: rgba(255, 255, 255, 0.25);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      line-height: 1.5;
+      padding-bottom: 4rem;
+    }
+
+    /* Ambient background grid */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 35px 35px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Top Nav */
+    .admin-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-logo-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-logo-text span {
+      color: var(--color-volt);
+    }
+
+    .badge-crm {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.72rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-full);
+      background: rgba(212, 255, 0, 0.12);
+      border: 1px solid var(--color-volt);
+      color: var(--color-volt);
+      font-weight: 700;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .db-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.35rem 0.85rem;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--color-green);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--color-green);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.55rem 1.15rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: var(--radius-full);
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-volt {
+      background: var(--color-volt);
+      color: #000;
+      box-shadow: 0 0 15px var(--color-volt-glow);
+    }
+    .btn-volt:hover { background: #e0ff33; transform: translateY(-1px); }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+    }
+    .btn-outline:hover {
+      border-color: var(--color-volt);
+      color: var(--color-volt);
+      background: rgba(212, 255, 0, 0.05);
+    }
+
+    /* Container */
+    .admin-container {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 2.5rem auto 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+      background: var(--bg-glass-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(16px);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .stat-card:hover { border-color: var(--border-medium); transform: translateY(-2px); }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .stat-label {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .stat-icon { font-size: 1.4rem; }
+
+    .stat-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1;
+      color: #ffffff;
+    }
+
+    .stat-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    /* Filters Bar */
+    .filters-bar {
+      background: var(--bg-glass-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(16px);
+    }
+
+    .filters-left {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      flex: 1;
+    }
+
+    .search-box {
+      position: relative;
+      min-width: 280px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.65rem 1rem 0.65rem 2.4rem;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      color: #ffffff;
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus {
+      border-color: var(--color-volt);
+      box-shadow: 0 0 12px var(--color-volt-glow);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .custom-select {
+      padding: 0.65rem 1rem;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      color: #ffffff;
+      font-size: 0.85rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .filters-right {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    /* Inquiries Table Card */
+    .table-card {
+      background: var(--bg-glass-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    }
+
+    .table-header {
+      padding: 1.25rem 1.75rem;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .table-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .inquiry-count-badge {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.75rem;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-full);
+      color: var(--text-secondary);
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      max-width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      padding: 1rem 1.25rem;
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(0, 0, 0, 0.4);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 1.15rem 1.25rem;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      vertical-align: top;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .voucher-badge {
+      font-family: 'Space Grotesk', monospace;
+      font-weight: 700;
+      color: var(--color-volt);
+      background: rgba(212, 255, 0, 0.08);
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(212, 255, 0, 0.3);
+      font-size: 0.78rem;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .athlete-name {
+      font-weight: 700;
+      color: #ffffff;
+      font-size: 0.98rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .contact-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: color 0.15s;
+    }
+    .contact-link:hover { color: var(--color-cyan); }
+
+    .interest-tag {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-full);
+      background: rgba(0, 245, 255, 0.08);
+      color: var(--color-cyan);
+      border: 1px solid rgba(0, 245, 255, 0.25);
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .tag-calisthenics {
+      background: rgba(212, 255, 0, 0.08);
+      color: var(--color-volt);
+      border-color: rgba(212, 255, 0, 0.3);
+    }
+
+    .message-cell {
+      max-width: 320px;
+      line-height: 1.45;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .date-text {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* Status Select Dropdown */
+    .status-select {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-full);
+      outline: none;
+      cursor: pointer;
+      border: 1px solid transparent;
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .status-Pending {
+      color: var(--color-gold);
+      border-color: rgba(255, 183, 3, 0.4);
+      background: rgba(255, 183, 3, 0.1);
+    }
+    .status-Contacted {
+      color: var(--color-cyan);
+      border-color: rgba(0, 245, 255, 0.4);
+      background: rgba(0, 245, 255, 0.1);
+    }
+    .status-Enrolled {
+      color: var(--color-volt);
+      border-color: rgba(212, 255, 0, 0.4);
+      background: rgba(212, 255, 0, 0.1);
+    }
+    .status-Archived {
+      color: var(--text-muted);
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .delete-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 26, 83, 0.3);
+      color: var(--color-crimson);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .delete-btn:hover {
+      background: var(--color-crimson);
+      color: #ffffff;
+      border-color: var(--color-crimson);
+    }
+
+    .empty-state {
+      padding: 4rem 2rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #0a0b0f;
+      border: 1px solid var(--color-volt);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px var(--color-volt-glow);
+      color: #ffffff;
+      padding: 0.85rem 1.5rem;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-weight: 600;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 900px) {
+      .filters-bar { flex-direction: column; align-items: stretch; }
+      .search-box { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-grid"></div>
+
+  <!-- Header -->
+  <header class="admin-header">
+    <div class="brand-group">
+      <div class="brand-logo-text">
+        FORGE <span>CRM</span>
+      </div>
+      <span class="badge-crm">ATHLETE INTELLIGENCE</span>
+    </div>
+
+    <div class="header-right">
+      <div class="db-status">
+        <span class="status-dot"></span>
+        <span>SQLite Local Engine</span>
+      </div>
+      <button id="admin-ai-key-btn" class="btn btn-outline" style="border-color: rgba(212, 255, 0, 0.4); color: var(--color-volt);">
+        <span>⚙️ AI API Key</span>
+      </button>
+      <a href="index.html" class="btn btn-outline">
+        <span>← Back to Website</span>
+      </a>
+      <a href="index.html#contact" class="btn btn-volt" target="_blank">
+        <span>+ New VIP Pass</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- AI API Key Settings Modal -->
+  <div class="modal-overlay" id="ai-key-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(16px); z-index: 999; align-items: center; justify-content: center;">
+    <div class="modal-card" style="background: #08090d; border: 1.5px solid var(--color-volt); border-radius: var(--radius-lg); width: 480px; max-width: 90vw; padding: 2rem; box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 30px var(--color-volt-glow);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="margin: 0; font-family: 'Syne', sans-serif; font-size: 1.25rem; color: #fff;">⚙️ AI Chatbot API Key</h3>
+        <button id="btn-close-ai-modal" style="background: none; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer;">✕</button>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5;">
+        Manually add or update the API key powering the <strong>FORGE AI Concierge</strong>. Compatible with <strong>OpenAI</strong> (<code>sk-...</code>) or <strong>Groq</strong> (<code>gsk_...</code>).
+      </p>
+
+      <div style="margin-bottom: 1.2rem;">
+        <label style="display: block; font-size: 0.76rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem;">Current Status</label>
+        <div id="admin-key-status" style="font-family: 'Space Grotesk', monospace; font-size: 0.84rem; color: var(--color-volt); background: rgba(212, 255, 0, 0.08); padding: 0.5rem 0.85rem; border-radius: 8px; border: 1px solid rgba(212, 255, 0, 0.2);">
+          Checking status...
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1.2rem;">
+        <label for="admin-input-key" style="display: block; font-size: 0.76rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem;">New API Key</label>
+        <input type="password" id="admin-input-key" placeholder="Paste sk-... or gsk_... key" style="width: 100%; box-sizing: border-box; background: #020204; border: 1px solid var(--border-medium); border-radius: 8px; padding: 0.65rem 0.85rem; color: #fff; font-family: 'Space Grotesk', monospace; font-size: 0.85rem; outline: none;" />
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label for="admin-select-model" style="display: block; font-size: 0.76rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem;">Model Engine</label>
+        <select id="admin-select-model" style="width: 100%; box-sizing: border-box; background: #020204; border: 1px solid var(--border-medium); border-radius: 8px; padding: 0.65rem 0.85rem; color: #fff; font-size: 0.85rem; outline: none; cursor: pointer;">
+          <option value="openai/gpt-oss-120b">Groq: GPT OSS 120B (Ultra-Fast & Smart)</option>
+          <option value="openai/gpt-oss-20b">Groq: GPT OSS 20B (Lightweight)</option>
+          <option value="gpt-4o-mini">OpenAI: GPT-4o Mini</option>
+          <option value="gpt-4o">OpenAI: GPT-4o</option>
+        </select>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+        <button id="btn-admin-clear-key" class="btn btn-outline" style="border-color: rgba(255,26,83,0.4); color: var(--color-crimson);">Remove Key</button>
+        <button id="btn-admin-save-key" class="btn btn-volt">Save & Activate</button>
+      </div>
+      <div id="admin-key-feedback" style="margin-top: 0.85rem; font-size: 0.78rem; text-align: right; min-height: 16px;"></div>
+    </div>
+  </div>
+
+  <main class="admin-container">
+    
+    <!-- Top Stats Row -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-label">Total Inquiries</span>
+          <span class="stat-icon">📋</span>
+        </div>
+        <div class="stat-val" id="stat-total">0</div>
+        <div class="stat-sub">Stored in local SQLite database</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-label">Pending Action</span>
+          <span class="stat-icon">⏳</span>
+        </div>
+        <div class="stat-val" style="color: var(--color-gold);" id="stat-pending">0</div>
+        <div class="stat-sub">Requires concierge callback</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-label">Contacted / Tour Set</span>
+          <span class="stat-icon">📞</span>
+        </div>
+        <div class="stat-val" style="color: var(--color-cyan);" id="stat-contacted">0</div>
+        <div class="stat-sub">Athletes currently in dialogue</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-label">Enrolled Members</span>
+          <span class="stat-icon">⚡</span>
+        </div>
+        <div class="stat-val" style="color: var(--color-volt);" id="stat-enrolled">0</div>
+        <div class="stat-sub">VIP passes converted to membership</div>
+      </div>
+    </div>
+
+    <!-- Filters Bar -->
+    <div class="filters-bar">
+      <div class="filters-left">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="filter-search" class="search-input" placeholder="Search athlete, email, voucher code...">
+        </div>
+
+        <select id="filter-status" class="custom-select">
+          <option value="all">All Statuses</option>
+          <option value="Pending">Pending (Action Required)</option>
+          <option value="Contacted">Contacted</option>
+          <option value="Enrolled">Enrolled / Active</option>
+          <option value="Archived">Archived</option>
+        </select>
+
+        <select id="filter-interest" class="custom-select">
+          <option value="all">All Training Interests</option>
+          <option value="calisthenics">Calisthenics & Rings</option>
+          <option value="olympic-lifting">Olympic Weightlifting / Titan</option>
+          <option value="pro-performance">Pro Performance Membership</option>
+          <option value="cryo-recovery">CryoSpa & Recovery</option>
+          <option value="vip-pass">Free 1-Day VIP Pass</option>
+        </select>
+      </div>
+
+      <div class="filters-right">
+        <button id="btn-export-csv" class="btn btn-outline" title="Download CSV Spreadsheet">
+          <span>📥 Export CSV</span>
+        </button>
+        <button id="btn-refresh" class="btn btn-outline" title="Reload from SQLite">
+          <span>🔄 Refresh</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Inquiries Data Table Card -->
+    <div class="table-card">
+      <div class="table-header">
+        <h3 class="table-title">ATHLETE INQUIRY REGISTRY</h3>
+        <span class="inquiry-count-badge" id="record-count">0 Records</span>
+      </div>
+
+      <div class="table-responsive">
+        <table id="inquiries-table">
+          <thead>
+            <tr>
+              <th>VOUCHER / ID</th>
+              <th>ATHLETE</th>
+              <th>CONTACT INFO</th>
+              <th>PRIMARY INTEREST</th>
+              <th>ATHLETIC BACKGROUND / MESSAGE</th>
+              <th>SUBMITTED</th>
+              <th>STATUS</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="inquiries-tbody">
+            <!-- Dynamically populated via JavaScript -->
+          </tbody>
+        </table>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state" style="display: none;">
+          <div class="empty-icon">📭</div>
+          <h4>No inquiries found matching your filters.</h4>
+          <p>Submit a test inquiry on the main website to see it appear here live.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">
+    <span id="toast-icon">✓</span>
+    <span id="toast-message">Status updated</span>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const tbody = document.getElementById('inquiries-tbody');
+      const emptyState = document.getElementById('empty-state');
+      const searchInput = document.getElementById('filter-search');
+      const statusSelect = document.getElementById('filter-status');
+      const interestSelect = document.getElementById('filter-interest');
+      const refreshBtn = document.getElementById('btn-refresh');
+      const exportBtn = document.getElementById('btn-export-csv');
+
+      const statTotal = document.getElementById('stat-total');
+      const statPending = document.getElementById('stat-pending');
+      const statContacted = document.getElementById('stat-contacted');
+      const statEnrolled = document.getElementById('stat-enrolled');
+      const recordCount = document.getElementById('record-count');
+
+      // Toast notification helper
+      function showToast(msg, icon = '✓') {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-icon').textContent = icon;
+        document.getElementById('toast-message').textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2600);
+      }
+
+      // Fetch Stats
+      async function loadStats() {
+        try {
+          const res = await fetch('/api/stats');
+          const data = await res.json();
+          if (data.success) {
+            statTotal.textContent = data.total;
+            statPending.textContent = data.pending;
+            statContacted.textContent = data.contacted;
+            statEnrolled.textContent = data.enrolled;
+          }
+        } catch (e) {
+          console.error('Error loading stats:', e);
+        }
+      }
+
+      // Format program interest for display
+      function formatInterest(val) {
+        const labels = {
+          'calisthenics': 'Calisthenics & Rings',
+          'olympic-lifting': 'Olympic Weightlifting',
+          'personal-coaching': '1-on-1 Master Coaching',
+          'pro-performance': 'Pro Performance',
+          'cryo-recovery': 'CryoSpa & Recovery',
+          'vip-pass': '1-Day VIP Pass',
+          'general-inquiry': 'Facility Tour'
+        };
+        return labels[val] || val;
+      }
+
+      // Load and Render Inquiries
+      async function loadInquiries() {
+        const query = new URLSearchParams();
+        if (searchInput.value.trim()) query.append('search', searchInput.value.trim());
+        if (statusSelect.value !== 'all') query.append('status', statusSelect.value);
+        if (interestSelect.value !== 'all') query.append('interest', interestSelect.value);
+
+        try {
+          const res = await fetch(`/api/inquiries?${query.toString()}`);
+          const data = await res.json();
+
+          if (!data.success || !data.inquiries || data.inquiries.length === 0) {
+            tbody.innerHTML = '';
+            emptyState.style.display = 'block';
+            recordCount.textContent = '0 Records';
+            return;
+          }
+
+          emptyState.style.display = 'none';
+          recordCount.textContent = `${data.inquiries.length} Record${data.inquiries.length > 1 ? 's' : ''}`;
+
+          tbody.innerHTML = data.inquiries.map(item => `
+            <tr data-id="${item.id}">
+              <td>
+                <span class="voucher-badge">${item.voucher_code}</span>
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.25rem;">ID: #${item.id}</div>
+              </td>
+              <td>
+                <div class="athlete-name">${escapeHtml(item.name)}</div>
+              </td>
+              <td>
+                <a href="mailto:${escapeHtml(item.email)}" class="contact-link">✉️ ${escapeHtml(item.email)}</a>
+                ${item.phone ? `<a href="tel:${escapeHtml(item.phone)}" class="contact-link" style="margin-top: 0.25rem;">📞 ${escapeHtml(item.phone)}</a>` : '<span style="color: var(--text-muted); font-size: 0.75rem;">No phone provided</span>'}
+              </td>
+              <td>
+                <span class="interest-tag ${item.interest === 'calisthenics' ? 'tag-calisthenics' : ''}">
+                  ${formatInterest(item.interest)}
+                </span>
+              </td>
+              <td>
+                <div class="message-cell">${escapeHtml(item.message)}</div>
+              </td>
+              <td>
+                <div class="date-text">${escapeHtml(item.created_at)}</div>
+              </td>
+              <td>
+                <select class="status-select status-${item.status}" data-id="${item.id}">
+                  <option value="Pending" ${item.status === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
+                  <option value="Contacted" ${item.status === 'Contacted' ? 'selected' : ''}>📞 Contacted</option>
+                  <option value="Enrolled" ${item.status === 'Enrolled' ? 'selected' : ''}>⚡ Enrolled</option>
+                  <option value="Archived" ${item.status === 'Archived' ? 'selected' : ''}>📁 Archived</option>
+                </select>
+              </td>
+              <td>
+                <button class="delete-btn" data-id="${item.id}" title="Delete Record">✕</button>
+              </td>
+            </tr>
+          `).join('');
+
+          attachRowEvents();
+        } catch (e) {
+          console.error('Error loading inquiries:', e);
+        }
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>"']/g, function(m) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+        });
+      }
+
+      function attachRowEvents() {
+        // Status change listener
+        document.querySelectorAll('.status-select').forEach(select => {
+          select.addEventListener('change', async function () {
+            const id = this.getAttribute('data-id');
+            const newStatus = this.value;
+
+            this.className = `status-select status-${newStatus}`;
+
+            try {
+              const res = await fetch(`/api/inquiries/${id}/status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+              });
+              const data = await res.json();
+              if (data.success) {
+                showToast(`Record #${id} marked as ${newStatus}`);
+                loadStats();
+              }
+            } catch (e) {
+              console.error('Failed to update status:', e);
+            }
+          });
+        });
+
+        // Delete button listener
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+          btn.addEventListener('click', async function () {
+            const id = this.getAttribute('data-id');
+            if (!confirm(`Are you sure you want to delete inquiry record #${id}?`)) return;
+
+            try {
+              const res = await fetch(`/api/inquiries/${id}/delete`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+              });
+              const data = await res.json();
+              if (data.success) {
+                showToast(`Record #${id} deleted`, '🗑️');
+                loadInquiries();
+                loadStats();
+              }
+            } catch (e) {
+              console.error('Failed to delete inquiry:', e);
+            }
+          });
+        });
+      }
+
+      // Event Listeners
+      let debounceTimeout;
+      searchInput.addEventListener('input', () => {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(loadInquiries, 250);
+      });
+
+      statusSelect.addEventListener('change', loadInquiries);
+      interestSelect.addEventListener('change', loadInquiries);
+      refreshBtn.addEventListener('click', () => {
+        loadInquiries();
+        loadStats();
+        showToast('Registry synchronized with SQLite', '🔄');
+      });
+
+      exportBtn.addEventListener('click', () => {
+        window.location.href = '/api/export';
+      });
+
+      // AI Key Modal logic
+      const aiKeyBtn = document.getElementById('admin-ai-key-btn');
+      const aiKeyModal = document.getElementById('ai-key-modal');
+      const btnCloseAiModal = document.getElementById('btn-close-ai-modal');
+      const adminKeyStatus = document.getElementById('admin-key-status');
+      const adminInputKey = document.getElementById('admin-input-key');
+      const adminSelectModel = document.getElementById('admin-select-model');
+      const btnAdminSaveKey = document.getElementById('btn-admin-save-key');
+      const btnAdminClearKey = document.getElementById('btn-admin-clear-key');
+      const adminKeyFeedback = document.getElementById('admin-key-feedback');
+
+      async function checkAdminAiStatus() {
+        try {
+          const res = await fetch('/api/chat/status');
+          const data = await res.json();
+          if (data.configured) {
+            adminKeyStatus.innerHTML = `🟢 <strong>Connected:</strong> ${data.masked_key} &nbsp;|&nbsp; <em>${data.model}</em>`;
+            adminKeyStatus.style.color = 'var(--color-volt)';
+            adminKeyStatus.style.borderColor = 'rgba(212, 255, 0, 0.4)';
+            if (data.model) adminSelectModel.value = data.model;
+          } else {
+            adminKeyStatus.innerHTML = `⚠️ <strong>Not Configured:</strong> No active API key.`;
+            adminKeyStatus.style.color = 'var(--color-crimson)';
+            adminKeyStatus.style.borderColor = 'rgba(255, 26, 83, 0.4)';
+          }
+        } catch (e) {
+          adminKeyStatus.textContent = 'Could not verify status.';
+        }
+      }
+
+      if (aiKeyBtn && aiKeyModal) {
+        aiKeyBtn.addEventListener('click', () => {
+          aiKeyModal.style.display = 'flex';
+          checkAdminAiStatus();
+          adminKeyFeedback.textContent = '';
+        });
+
+        btnCloseAiModal.addEventListener('click', () => {
+          aiKeyModal.style.display = 'none';
+        });
+
+        aiKeyModal.addEventListener('click', (e) => {
+          if (e.target === aiKeyModal) aiKeyModal.style.display = 'none';
+        });
+
+        btnAdminSaveKey.addEventListener('click', async () => {
+          const key = adminInputKey.value.trim();
+          const model = adminSelectModel.value;
+          if (!key) {
+            adminKeyFeedback.style.color = 'var(--color-crimson)';
+            adminKeyFeedback.textContent = 'Please enter an API key.';
+            return;
+          }
+
+          btnAdminSaveKey.disabled = true;
+          btnAdminSaveKey.textContent = 'Saving...';
+
+          try {
+            const res = await fetch('/api/chat/set-key', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ api_key: key, model: model })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+              adminKeyFeedback.style.color = 'var(--color-volt)';
+              adminKeyFeedback.textContent = '✓ ' + (data.message || 'Key saved successfully!');
+              adminInputKey.value = '';
+              checkAdminAiStatus();
+              showToast('AI API Key updated', '🔑');
+              setTimeout(() => {
+                aiKeyModal.style.display = 'none';
+              }, 1500);
+            } else {
+              adminKeyFeedback.style.color = 'var(--color-crimson)';
+              adminKeyFeedback.textContent = data.error || 'Failed to save key.';
+            }
+          } catch (e) {
+            adminKeyFeedback.style.color = 'var(--color-crimson)';
+            adminKeyFeedback.textContent = 'Network error saving key.';
+          } finally {
+            btnAdminSaveKey.disabled = false;
+            btnAdminSaveKey.textContent = 'Save & Activate';
+          }
+        });
+
+        btnAdminClearKey.addEventListener('click', async () => {
+          if (!confirm('Remove current AI API key?')) return;
+          try {
+            const res = await fetch('/api/chat/clear-key', { method: 'POST' });
+            if (res.ok) {
+              adminKeyFeedback.style.color = 'var(--color-volt)';
+              adminKeyFeedback.textContent = 'Key removed.';
+              checkAdminAiStatus();
+              showToast('AI API Key removed', '🗑️');
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        });
+      }
+
+      // Initial load
+      loadStats();
+      loadInquiries();
+    })();
+  </script>
+</body>
+</html>
