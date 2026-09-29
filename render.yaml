@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: forge-athletics
+    env: python
+    buildCommand: ""
+    startCommand: python3 server.py
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: openai/gpt-oss-120b
