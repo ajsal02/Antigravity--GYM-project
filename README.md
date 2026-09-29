@@ -4,6 +4,24 @@ An ultra-modern, production-ready 3D web experience built from scratch using **T
 
 ---
 
+## 🌐 Live Public Showcase Links
+
+- 🚀 **Live Global Website**: [**https://ajsal02.github.io/Antigravity--GYM-project/**](https://ajsal02.github.io/Antigravity--GYM-project/)
+- 🏋️ **3D Interactive Equipment Lab**: [**https://ajsal02.github.io/Antigravity--GYM-project/#interactive-3d**](https://ajsal02.github.io/Antigravity--GYM-project/#interactive-3d)
+- 📦 **GitHub Repository**: [**https://github.com/ajsal02/Antigravity--GYM-project**](https://github.com/ajsal02/Antigravity--GYM-project)
+
+---
+
+## ☁️ 1-Click Cloud Deployment (Render.com)
+
+Deploy the complete full-stack web application (Python server + SQLite CRM + AI Chatbot) 24/7 in the cloud:
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/ajsal02/Antigravity--GYM-project)
+
+👉 **Instant Deploy URL**: [https://render.com/deploy?repo=https://github.com/ajsal02/Antigravity--GYM-project](https://render.com/deploy?repo=https://github.com/ajsal02/Antigravity--GYM-project)
+
+---
+
 ## 🚀 Instant Quickstart (Runs immediately in any browser)
 
 The website is completely self-contained. All 3D libraries (`three.min.js`, `OrbitControls.js`) are bundled locally under `vendor/`—no external build step or npm installation required.
