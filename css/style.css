@@ -3453,31 +3453,53 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Inline Interactive Buttons */
 .chat-action-container {
-  margin-top: 10px;
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chat-quick-grid {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .chat-inline-action-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 14px;
+  padding: 7px 13px;
   font-family: var(--font-heading);
-  font-size: 0.78rem;
-  font-weight: 800;
+  font-size: 0.76rem;
+  font-weight: 700;
   border-radius: 8px;
   cursor: pointer;
   transition: all var(--transition-fast);
   text-decoration: none;
-  border: 1px solid var(--color-volt);
-  background: rgba(212, 255, 0, 0.12);
+  border: 1px solid rgba(212, 255, 0, 0.4);
+  background: rgba(212, 255, 0, 0.08);
   color: var(--color-volt);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .chat-inline-action-btn:hover {
   background: var(--color-volt);
   color: #000000;
-  transform: translateY(-1px);
-  box-shadow: 0 0 14px var(--color-volt-glow);
+  transform: translateY(-2px);
+  box-shadow: 0 0 16px var(--color-volt-glow);
+}
+
+.chat-inline-action-btn.quick-ask-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--color-text-main);
+}
+
+.chat-inline-action-btn.quick-ask-btn:hover {
+  background: var(--color-volt);
+  border-color: var(--color-volt);
+  color: #000000;
 }
 
 /* Typing Indicator */

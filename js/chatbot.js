@@ -80,6 +80,24 @@
     return path;
   }
 
+  // Dynamic Time & Facility Status Helper
+  function getForgeTimeContext() {
+    const now = new Date();
+    const hour = now.getHours();
+    const day = now.getDay(); // 0 = Sun, 6 = Sat
+    const isWeekend = day === 0 || day === 6;
+    const openHour = isWeekend ? 6 : 5;
+    const closeHour = isWeekend ? 21 : 23;
+
+    let greeting = 'Good evening';
+    if (hour >= 5 && hour < 12) greeting = 'Good morning';
+    else if (hour >= 12 && hour < 17) greeting = 'Good afternoon';
+
+    const isOpen = hour >= openHour && hour < closeHour;
+    const statusStr = isOpen ? `currently **OPEN** (closing at ${closeHour}:00)` : `currently **CLOSED** (opens at 0${openHour}:00)`;
+    return { greeting, statusStr };
+  }
+
   // Built-in FORGE AI Knowledge Engine (Instant offline & static host response)
   function generateLocalKnowledgeReply(query) {
     const q = (query || '').toLowerCase().trim();
@@ -176,8 +194,10 @@
     }
 
     if (/\b(hi|hello|hey|greetings|morning|afternoon|evening|help|what can you do)\b/i.test(q)) {
+      const timeCtx = getForgeTimeContext();
       return (
-        "Welcome to **FORGE**! I am your AI Concierge. I can assist you exclusively with:\n\n" +
+        `**${timeCtx.greeting}, athlete!** Welcome to **FORGE**! I am your AI Concierge. Our facility is ${timeCtx.statusStr}.\n\n` +
+        "I can assist you exclusively with:\n\n" +
         "• 🦾 **Calisthenics Courses & Rig Jungle** (Coached by Viktor Kroll)\n" +
         "• 🏋️ **Olympic Weightlifting & Biomechanics** (Coached by Marcus Vance)\n" +
         "• 💰 **Membership Tiers & Pricing** ($89 – $179/mo)\n" +
@@ -187,9 +207,17 @@
       );
     }
 
+    const timeCtx = getForgeTimeContext();
     return (
-      "I am the FORGE AI Concierge, dedicated exclusively to **FORGE Athletics**—including our Calisthenics Academy, Olympic Weightlifting platforms, recovery suites, membership tiers, and coaching schedules.\n\n" +
-      "Ask me about our membership pricing, coaching clinics with Viktor Kroll, or how to claim your complimentary 7-Day VIP Pass!"
+      "I sincerely apologize for the inconvenience! 🙏\n\n" +
+      `**${timeCtx.greeting}, athlete!** To respect your valuable time, as the dedicated FORGE AI Concierge, my knowledge is strictly focused on **FORGE Athletics** (our facility is ${timeCtx.statusStr}). I am unable to assist with outside websites, external trivia, or non-gym topics.\n\n` +
+      "I want to make sure your training questions are answered quickly and accurately. Here are the top questions I can assist you with right now:\n\n" +
+      "• **💰 Membership Plans**: What are the rates for Core Black ($89), Calisthenics Master ($139), and Pro Performance ($179)?\n" +
+      "• **🦾 Calisthenics Academy**: What programs does Master Coach Viktor Kroll offer in the Zone 02 Rig Jungle?\n" +
+      "• **🏋️ Olympic Weightlifting**: What platforms, bars, and diagnostics does Coach Marcus Vance coach?\n" +
+      "• **⏰ Hours & Schedule**: What are our operating hours (05:00–23:00 M-F, 06:00–21:00 S-S) and weekly class timetable?\n" +
+      "• **🎟️ Free Access Pass**: How can I claim a complimentary 7-Day VIP Pass?\n\n" +
+      "Please feel free to tap any of the quick options below or ask your gym-related question!"
     );
   }
 
@@ -200,11 +228,14 @@
       ? 'https://api.groq.com/openai/v1/chat/completions'
       : 'https://api.openai.com/v1/chat/completions';
 
+    const timeCtx = getForgeTimeContext();
     const systemPrompt = 
       "You are FORGE, the elite AI Concierge for FORGE Athletics gym in District 7. " +
-      "Coaches: Viktor Kroll (Calisthenics/Rings), Marcus Vance (Olympic Lifting), Elena Rostova (Biomechanics). " +
-      "Pricing: Core Black $89/mo, Calisthenics Master $139/mo, Pro Performance $179/mo. 7-Day Free VIP Pass available. " +
-      "Hours: M-F 05:00-23:00, S-S 06:00-21:00. Respond concisely with athletic, motivating tone.";
+      `Current Time: ${timeCtx.greeting}, facility is ${timeCtx.statusStr}. ` +
+      "MANDATORY DOMAIN BOUNDARY & HUMBLE APOLOGY RULE: " +
+      "You ONLY answer questions directly related to FORGE Athletics (Calisthenics, Olympic Lifting, Cryo Recovery, Memberships $89-$179, Hours, VIP Pass). " +
+      "If a user asks ANY question about outside websites, other businesses, general knowledge, coding, homework, or non-gym topics, you MUST decline with a humble apology format: " +
+      "'I sincerely apologize for the inconvenience! 🙏' Respect their valuable time, mention the current time greeting and facility status, and provide a structured questions-based guide presenting top gym questions they can ask (Memberships, Viktor Kroll's Calisthenics, Marcus Vance's Olympic Lifting, Hours, or 7-Day Pass). Never answer non-gym questions.";
 
     const messages = [
       { role: 'system', content: systemPrompt },
@@ -368,6 +399,29 @@
         <div class="chat-action-container">
           <button class="chat-inline-action-btn action-schedule-btn" onclick="(document.getElementById('btn-open-schedule') || document.getElementById('schedule-modal'))?.click(); document.getElementById('schedule-modal')?.classList.remove('hidden');">
             📅 Open Weekly Coached Schedule
+          </button>
+        </div>
+      `;
+    }
+
+    // If message is the humble sorry / outside questions response, render interactive quick question buttons
+    if (/(sincerely apologize|outside websites|external trivia|non-gym topics|outside our gym domain|cannot assist with inquiries outside)/i.test(text) && !output.includes('quick-ask-btn')) {
+      output += `
+        <div class="chat-action-container chat-quick-grid">
+          <button class="chat-inline-action-btn quick-ask-btn" onclick="window.forgeChatQuickAsk('What are the membership pricing plans?');">
+            💰 Membership Plans
+          </button>
+          <button class="chat-inline-action-btn quick-ask-btn" onclick="window.forgeChatQuickAsk('Tell me about Viktor Kroll and the Calisthenics Academy.');">
+            🦾 Calisthenics Academy
+          </button>
+          <button class="chat-inline-action-btn quick-ask-btn" onclick="window.forgeChatQuickAsk('Tell me about Marcus Vance and Olympic weightlifting.');">
+            🏋️ Olympic Lifting
+          </button>
+          <button class="chat-inline-action-btn quick-ask-btn" onclick="window.forgeChatQuickAsk('What are your facility hours and address?');">
+            ⏰ Hours & Location
+          </button>
+          <button class="chat-inline-action-btn action-pass-btn" onclick="document.getElementById('contact')?.scrollIntoView({behavior: 'smooth'});">
+            🎟️ Claim Free Pass
           </button>
         </div>
       `;
@@ -549,6 +603,13 @@
     if (inputField) inputField.focus();
   }
 
+  // Expose global quick-ask handler for interactive inline chip buttons
+  window.forgeChatQuickAsk = function (query) {
+    if (typeof handleSendMessage === 'function') {
+      handleSendMessage(query);
+    }
+  };
+
   // Clear Conversation
   function clearConversation() {
     conversationHistory = [];
@@ -560,11 +621,13 @@
     playBlip(320, 'square', 0.05);
   }
 
-  // Initial Greeting
+  // Initial Greeting with Dynamic Time & Operating Status
   function showInitialGreeting() {
+    const timeCtx = getForgeTimeContext();
     const greeting = 
-      "Welcome to **FORGE**! I am your AI Concierge powered by OpenAI.\n\n" +
-      "I'm here to guide you through our **Calisthenics Academy** with Coach Viktor Kroll, **Olympic Weightlifting platforms**, **-110°C Cryo Recovery suites**, and membership tiers.\n\n" +
+      `**${timeCtx.greeting}, athlete!** Welcome to **FORGE Athletics**.\n\n` +
+      `Our facility in District 7 is ${timeCtx.statusStr}. I am your dedicated AI Concierge.\n\n` +
+      "I'm here to assist you with our **Calisthenics Academy** with Coach Viktor Kroll, **Olympic Weightlifting platforms**, **-110°C Cryo Recovery suites**, and membership tiers ($89 – $179/mo).\n\n" +
       "Ask me any question below, or tap one of the quick topics to get started!";
     appendMessage('assistant', greeting, true);
   }

@@ -80,13 +80,25 @@ def save_env_config(api_key=None, model=None):
 
 FORGE_SYSTEM_PROMPT = """You are "FORGE AI Concierge", the official high-performance AI assistant for FORGE Athletics, an elite gym specializing in Calisthenics Mastery, Olympic Weightlifting, and Biomechanical Recovery.
 
-STRICT DOMAIN BOUNDARY (MANDATORY RULE):
-- You ONLY answer questions directly related to FORGE Athletics, our gym facilities, training zones, calisthenics & Olympic lifting programs, recovery spa, pricing & memberships, class schedules, master coaches, and physical fitness services.
-- You MUST DECLINE all outer, unrelated, or non-gym questions (such as software coding, computer science, general history, homework, politics, non-fitness cooking, movies, gaming, random facts, math puzzles, general internet trivia, etc.).
-- When an outer/unrelated question is asked, respond with a polite apology and clearly explain your scope:
-  "I apologize, but as the FORGE AI Concierge, I am strictly dedicated to assisting with inquiries about FORGE Athletics—including our calisthenics academy, Olympic lifting platforms, recovery suites, membership options, and class schedules.
-  
-  Please let me know how I can assist you with your athletic journey or facility visits at FORGE!"
+STRICT DOMAIN BOUNDARY & HUMBLE APOLOGY (MANDATORY RULE):
+- You ONLY answer questions directly related to FORGE Athletics: our gym facilities, training zones, calisthenics & Olympic lifting programs, recovery spa, pricing & memberships, class schedules, master coaches, and physical fitness services.
+- If a user asks ANY outside or unrelated question (such as outside websites, other businesses, software coding, homework, politics, non-fitness cooking, movies, gaming, random facts, math, general trivia, weather in other cities, etc.):
+  1. ALWAYS provide a humble, respectful, and polite apology format.
+  2. Respect the user's valuable time by providing immediate gym time awareness and greeting them according to the current time of day.
+  3. Offer a structured, questions-based guide presenting high-value gym questions they can ask based on their athletic interests.
+  4. Follow this format:
+     "I sincerely apologize for the inconvenience! 🙏
+
+     **[Good morning / Good afternoon / Good evening], athlete!** To respect your valuable time, as the dedicated FORGE AI Concierge, my expertise is strictly focused on **FORGE Athletics** and our facility services. I am unable to assist with topics or websites outside our gym domain.
+
+     I want to make sure your training questions are answered quickly and accurately. Here are the top questions I can answer for you right now:
+     • **💰 Membership Plans**: What are the rates for Core Black ($89), Calisthenics Master ($139), and Pro Performance ($179)?
+     • **🦾 Calisthenics Academy**: What programs does Master Coach Viktor Kroll offer in the Zone 02 Rig Jungle?
+     • **🏋️ Olympic Weightlifting**: What platforms, bars, and diagnostics does Coach Marcus Vance coach?
+     • **⏰ Hours & Schedule**: What are our operating hours (05:00–23:00 M-F, 06:00–21:00 S-S) and weekly class timetable?
+     • **🎟️ Free Access Pass**: How can I claim a complimentary 7-Day VIP Pass?
+
+     Please feel free to ask any of these questions or let me know how I can best support your training goals at FORGE!"
 - NEVER answer outer questions, write code, or fulfill non-gym prompts, even if the user insists. Always pivot back warmly to FORGE Athletics.
 
 Gym Knowledge:
@@ -120,6 +132,27 @@ Persona:
 - Keep answers structured with short bullet points when listing pricing or features.
 - If an athlete is interested in joining or trying the gym, invite them to claim their 7-Day Free VIP Pass right on the website!
 """
+
+def get_forge_time_context():
+    """Returns dynamic time-of-day greeting, facility open/closed status, and formatted local time."""
+    now = datetime.now()
+    hour = now.hour
+    weekday = now.weekday()
+    is_weekend = weekday >= 5
+    open_hour = 6 if is_weekend else 5
+    close_hour = 21 if is_weekend else 23
+
+    if 5 <= hour < 12:
+        greeting = "Good morning"
+    elif 12 <= hour < 17:
+        greeting = "Good afternoon"
+    else:
+        greeting = "Good evening"
+
+    is_open = open_hour <= hour < close_hour
+    status = f"currently **OPEN** (closing at {close_hour}:00)" if is_open else f"currently **CLOSED** (opens at {open_hour:02d}:00)"
+    return greeting, status, now.strftime('%A, %I:%M %p')
+
 
 def generate_offline_fallback(query):
     """Provides instant helpful gym info if OPENAI_API_KEY is not yet populated in .env."""
@@ -175,19 +208,29 @@ def generate_offline_fallback(query):
             "• **Infrared Sauna & Contrast Plunge**: Rapid muscle tissue recovery and circulation boost."
         )
     elif any(w in q for w in ['hi', 'hello', 'hey', 'greetings', 'help']):
+        greeting, status, _ = get_forge_time_context()
         return (
-            "Welcome to **FORGE**! I am your AI Concierge. I can assist you exclusively with:\n\n"
+            f"**{greeting}, athlete!** Welcome to **FORGE**! I am your AI Concierge. Our facility is {status}.\n\n"
+            "I can assist you exclusively with:\n\n"
             "• 🦾 **Calisthenics Courses & Rig Jungle** (Coached by Viktor Kroll)\n"
-            "• 🏋️ **Olympic Weightlifting & Biomechanics**\n"
+            "• 🏋️ **Olympic Weightlifting & Biomechanics** (Coached by Marcus Vance)\n"
             "• 💰 **Membership Tiers & Pricing** ($89 – $179/mo)\n"
             "• 🎟️ **Claiming your 7-Day Free VIP Pass**\n"
             "• ⏰ **Facility Hours & Location** (District 7)\n\n"
             "What would you like to explore regarding FORGE Athletics today?"
         )
     else:
+        greeting, status, _ = get_forge_time_context()
         return (
-            "I apologize, but as the FORGE AI Concierge, I can only assist with questions directly related to **FORGE Athletics**, our training programs, calisthenics and Olympic lifting facilities, membership options, and coaching schedules.\n\n"
-            "Please let me know if you have any questions regarding our gym floor, classes with Coach Viktor Kroll or Marcus Vance, or claiming your complimentary 7-Day VIP Pass!"
+            "I sincerely apologize for the inconvenience! 🙏\n\n"
+            f"**{greeting}, athlete!** To respect your valuable time, as the dedicated FORGE AI Concierge, my knowledge is strictly focused on **FORGE Athletics** (our facility is {status}). I am unable to assist with outside websites, external trivia, or non-gym topics.\n\n"
+            "I want to make sure your training questions are answered quickly and accurately. Here are the top questions I can assist you with right now:\n\n"
+            "• **💰 Membership Plans**: What are the rates for Core Black ($89), Calisthenics Master ($139), and Pro Performance ($179)?\n"
+            "• **🦾 Calisthenics Academy**: What programs does Master Coach Viktor Kroll offer in the Zone 02 Rig Jungle?\n"
+            "• **🏋️ Olympic Weightlifting**: What platforms, bars, and diagnostics does Coach Marcus Vance coach?\n"
+            "• **⏰ Hours & Schedule**: What are our operating hours (05:00–23:00 M-F, 06:00–21:00 S-S) and class timetable?\n"
+            "• **🎟️ Free Access Pass**: How can I claim a complimentary 7-Day VIP Pass?\n\n"
+            "Please feel free to ask any of these questions or let me know how I can best support your training goals at FORGE!"
         )
 
 
@@ -521,9 +564,17 @@ class ForgeRequestHandler(http.server.SimpleHTTPRequestHandler):
                 elif not is_groq and (not model or 'oss' in model or 'llama' in model):
                     model = "gpt-4o-mini"
 
-                # Build messages list
+                # Build messages list with dynamic time context
+                greeting_ctx, status_ctx, time_str_ctx = get_forge_time_context()
+                dynamic_system_prompt = (
+                    f"{FORGE_SYSTEM_PROMPT}\n\n"
+                    f"REAL-TIME GYM CONTEXT:\n"
+                    f"- Current Local Time: {time_str_ctx}\n"
+                    f"- Time Greeting: {greeting_ctx}\n"
+                    f"- Facility Status: {status_ctx}\n"
+                )
                 messages = [
-                    {"role": "system", "content": FORGE_SYSTEM_PROMPT}
+                    {"role": "system", "content": dynamic_system_prompt}
                 ]
                 # Include sanitized recent conversation history (up to last 6 messages)
                 if isinstance(history, list):
